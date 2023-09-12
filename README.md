@@ -1,2 +1,2 @@
 # FreeIRAN
-A Script for setup Ubuntu Server
+One Script for setup Ubuntu Server

@@ -4,7 +4,7 @@
 change_ssh_port() {
     local new_ssh_port="$1"
     if [[ -n "$new_ssh_port" ]]; then
-        sudo sed -i "s/^Port .*/Port $new_ssh_port/" /etc/ssh/sshd_config
+        sudo sed -i.bak "s/^Port .*/Port $new_ssh_port/" /etc/ssh/sshd_config
         sudo systemctl restart sshd
         echo "SSH port updated to $new_ssh_port. Make sure to update your SSH client configuration."
     else

@@ -73,16 +73,16 @@ sudo systemctl enable ufw
 ```
 warp-cli set-license <your-warp-plus-license-key>
 ```
-### WARP Status
+7. WARP Status
 ```
 bash <(curl -fsSL git.io/warp.sh) status
 ```
-7. Change Server DNS to use Pi-hole
+8. Change Server DNS to use Pi-hole
 ```
 sudo nano /etc/resolv.conf
 nameserver 127.0.0.53
 ```
-8. Restart your server with
+9. Restart your server with
 ```
 sudo shutdown -r now
 ```

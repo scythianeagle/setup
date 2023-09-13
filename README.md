@@ -73,6 +73,10 @@ sudo systemctl enable ufw
 ```
 warp-cli set-license <your-warp-plus-license-key>
 ```
+### WARP Status
+```
+bash <(curl -fsSL git.io/warp.sh) status
+```
 7. Change Server DNS to use Pi-hole
 ```
 sudo nano /etc/resolv.conf

@@ -12,7 +12,7 @@ What this script do?
 8. Install X-UI ❤️‍🔥
 9. Install Pi-Hole Adblocker 🦄
 10. Change Local DNS to PiHole 🛡️
-11. Install WARP Proxy ✨
+11. Install & set WARP Proxy ✨
 12. Install Erlang MTProto Proxy 💫
 13. Install Hysteria II 🌈
 14. Install TUIC v5 🔥

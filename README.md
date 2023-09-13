@@ -7,14 +7,13 @@ What does this script do? you can select to:
 3. Install Speedtest 🚀
 4. Create SWAP File 💾
 5. Enable BBR 🛸
-6. Enable and configure Cron ⏳
-7. Automatically update and restart the server every night at 01:00 GMT+3:30 🕐
-8. Install X-UI 🦄
-9. Install Pi-Hole Adblocker 🛡️
-10. Install & set WARP Proxy ✨
-11. Install Erlang MTProto Proxy 💫
-12. Install Hysteria II 🌈
-13. Install TUIC v5 🔥
+6. Automatically update and restart the server every night at 01:00 GMT+3:30 ⏳
+7. Install X-UI (Alireza/MHSanaei) 🦄
+8. Install Pi-Hole Adblocker 🛡️
+9. Install & set WARP Proxy ✨
+10. Install Erlang MTProto Proxy 💫
+11. Install Hysteria II 🌈
+12. Install TUIC v5 🔥
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
@@ -82,13 +81,14 @@ bash <(curl -fsSL git.io/warp.sh) status
 sudo nano /etc/resolv.conf
 nameserver 127.0.0.53
 ```
-if /resolv.conf managed by systemd-resolved, then you have to follow these steps:
+If /resolv.conf managed by systemd-resolved, then you have to follow these steps:
 ```
 cd /etc/netplan/
 ls
 nano ab-cloud-init.yaml
 sudo netplan apply
 ```
+You need to add the following settings to the 'ab-cloud-init.yaml' file:
 ```
 nameservers:
   addresses: [127.0.0.53]
@@ -154,6 +154,7 @@ sudo /home/qbittorrent-nox/Downloads/simplefileserver 80
 ```
 https://github.com/pi-hole
 https://github.com/alireza0/x-ui
+https://github.com/MHSanaei/3x-ui
 https://github.com/deathline94/tuic-v5-installer
 https://github.com/deathline94/Hysteria-Installer
 https://github.com/sssvip/simple-file-server

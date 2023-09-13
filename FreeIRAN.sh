@@ -14,11 +14,10 @@ What this script does:
 7. Automatically update and restart the server every night at 01:00 GMT+3:30
 8. Install X-UI
 9. Install Pi-Hole Adblocker
-10. Change Local DNS to PiHole
-11. Install & set WARP Proxy
-12. Install Erlang MTProto Proxy
-13. Install Hysteria II
-14. Install TUIC v5
+10. Install & set WARP Proxy
+11. Install Erlang MTProto Proxy
+12. Install Hysteria II
+13. Install TUIC v5
 
 Manually set the parameters yourself when prompted during the setup.
 
@@ -116,11 +115,12 @@ Setup completed. Don't forget to:
 
 1. Add your desired adlists via the Pi-hole web interface.
 2. Update the Pi-hole database with [pihole -g].
-3. Connect/disconnect WireProxy with [warp y].
-4. Obtain SSL Certificates with [sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email mymail@gmail.com -d sub.domain.com].
-5. Change the SSH Port with [sudo nano /etc/ssh/sshd_config].
-6. Set up UFW.
-7. Restart your server with [sudo shutdown -r now].
+3. Obtain SSL Certificates with [sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email yourmail@gmail.com -d sub.domain.com].
+4. Change the SSH Port with [sudo nano /etc/ssh/sshd_config].
+5. Change WARP License Key [warp-cli set-license <your-warp-plus-license-key>]
+6. Change Server DNS to use Pi-hole [sudo nano /etc/resolv.conf]
+7. Set up UFW.
+8. Restart your server with [sudo shutdown -r now].
 
 EOM
 

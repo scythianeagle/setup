@@ -13,27 +13,43 @@ sudo journalctl --vacuum-size=50M
 curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
 sudo apt-get install -y speedtest-cli
 
-# Create SWAP File
-sudo fallocate -l 1G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+# Ask the user if they want to create a SWAP file
+read -p "Do you want to create a SWAP file? (yes/no): " create_swap
 
-# Set sysctl parameters
-sudo sysctl vm.swappiness=10
-sudo sysctl vm.vfs_cache_pressure=50
-echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
-echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
+if [[ $create_swap == "yes" || $create_swap == "YES" ]]; then
+    # Ask for the SWAP file size
+    read -p "Enter the SWAP file size (e.g., 1G for 1GB): " swap_size
+
+    # Create the SWAP file with the specified size
+    sudo fallocate -l $swap_size /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+    # Set sysctl parameters
+    sudo sysctl vm.swappiness=10
+    sudo sysctl vm.vfs_cache_pressure=50
+    echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
+    echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
+
+    echo "SWAP file of size $swap_size created and configured."
+else
+    echo "No SWAP file will be created."
+fi
+
+# Set TCP congestion control settings
 echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
 
-# Change TimeZone
-sudo dpkg-reconfigure tzdata
-
 # Enable and configure Cron
 sudo systemctl enable cron
-crontab -e
+
+# Add cron jobs to update and upgrade the system daily at 00:30 GMT+3:30
+echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
+
+# Add a cron job to reboot the server daily at 01:00 GMT+3:30
+echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
 
 # Install X-UI
 bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
@@ -42,7 +58,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.s
 curl -sSL https://install.pi-hole.net | bash
 pihole -a -p
 
-# Change Local DNS to PiHole
+# Change Local DNS to Pi-Hole
 echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf
 
 # Change Lighttpd Conf
@@ -66,13 +82,13 @@ cat <<EOM
 
 Setup completed. Don't forget to:
 
-1. Add your desired adlists via Pi-hole web interface
-2. Update Pi-hole Database with [pihole -g]
-3. You can connect/disconnect WireProxy with [warp y]
-5. Obtain SSL Certificates with [sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email mymail@gmail.com -d sub.domain.com]
-6. Change SSH Port with [sudo nano /etc/ssh/sshd_config]
-7. Setup UFW
-8. Restart your server with [sudo shutdown -r now]
+1. Add your desired adlists via the Pi-hole web interface.
+2. Update the Pi-hole database with [pihole -g].
+3. Connect/disconnect WireProxy with [warp y].
+4. Obtain SSL Certificates with [sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email mymail@gmail.com -d sub.domain.com].
+5. Change the SSH Port with [sudo nano /etc/ssh/sshd_config].
+6. Set up UFW.
+7. Restart your server with [sudo shutdown -r now].
 
 EOM
 

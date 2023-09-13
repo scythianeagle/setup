@@ -82,6 +82,17 @@ bash <(curl -fsSL git.io/warp.sh) status
 sudo nano /etc/resolv.conf
 nameserver 127.0.0.53
 ```
+if /resolv.conf managed by systemd-resolved, then you have to follow these steps:
+```
+cd /etc/netplan/
+ls
+nano ab-cloud-init.yaml
+sudo netplan apply
+```
+```
+nameservers:
+  addresses: [127.0.0.53]
+```
 9. Restart your server with
 ```
 sudo shutdown -r now

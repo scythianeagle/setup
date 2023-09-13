@@ -1,7 +1,7 @@
 # FreeIRAN 🕊️
 🌟 A simple bash script for setup Ubuntu Server
 
-What this scriptes do:
+What this script do?
 1. Update & Upgrade Server 🧬
 2. Install essential packages 🎉
 3. Install Speedtest 🚀
@@ -10,8 +10,8 @@ What this scriptes do:
 6. Enable and configure Cron 🏵️
 7. Automatically update and restart the server every night at 01:00 GMT+3:30 🎗️
 8. Install X-UI ❤️‍🔥
-9. Install Pi-Hole Adblocker 💝
-10. Change Local DNS to PiHole 🎯
+9. Install Pi-Hole Adblocker 🦄
+10. Change Local DNS to PiHole 🛡️
 11. Install WARP WireProxy ✨
 12. Install Erlang MTProto Proxy 💫
 13. Install Hysteria II 🌈
@@ -19,11 +19,11 @@ What this scriptes do:
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
-# How to run ❓
+## How to run ❓
 ```
 curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && ./FreeIRAN.sh
 ```
-# After setup has completed, don't forget to:
+## After setup has completed, don't forget to:
 
 1. Add your desired adlists via Pi-hole web interface
 ```
@@ -77,7 +77,7 @@ sudo systemctl enable ufw
 ```
 sudo shutdown -r now
 ```
-# Optional: Install qbittorrent-nox 🔮
+## Optional: Install qbittorrent-nox 🔮
 ```
 sudo add-apt-repository ppa:qbittorrent-team/qbittorrent-stable
 sudo apt update
@@ -91,7 +91,7 @@ sudo systemctl enable qbittorrent-nox
 sudo systemctl start qbittorrent-nox
 sudo systemctl status qbittorrent-nox
 ```
-# Optional: Install simplefileserver 🪩
+## Optional: Install simplefileserver 🪩
 
 ⚠️ simplefileserver DO NOT Support Authentication
 ```
@@ -101,7 +101,7 @@ tar -xzvf simple-file-server_current_linux_amd64.tar.gz
 chmod 777 simplefileserver
 sudo /home/qbittorrent-nox/Downloads/simplefileserver
 ```
-# Optional: Warp XrayConfig ✨
+## Optional: Warp XrayConfig ✨
 ```
 {
   "protocol": "socks",
@@ -116,7 +116,7 @@ sudo /home/qbittorrent-nox/Downloads/simplefileserver
   "tag":"warp"
 },
 ```
-# Used Projects 💞
+## Used Projects 💞
 ```
 https://github.com/pi-hole
 https://github.com/alireza0/x-ui
@@ -127,7 +127,7 @@ https://github.com/seriyps/mtproto_proxy
 https://github.com/fscarmen/warp
 https://github.com/blocklistproject/Lists
 ```
-# Buy Me a Coffee ☕❤️
+## Buy Me a Coffee ☕❤️
 ```
 Tron USDT (TRC20): TMrJHiTnE6wMqHarp2SxVEmJfKXBoTSnZ4
 LiteCoin (LTC): ltc1qwhd8jpwumg5uywgv028h3lnsck8mjxhxnp4rja

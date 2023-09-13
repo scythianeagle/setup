@@ -128,7 +128,7 @@ https://github.com/deathline94/tuic-v5-installer
 https://github.com/deathline94/Hysteria-Installer
 https://github.com/sssvip/simple-file-server
 https://github.com/seriyps/mtproto_proxy
-https://github.com/fscarmen/warp
+https://github.com/P3TERX/warp.sh
 https://github.com/blocklistproject/Lists
 ```
 ## Buy Me a Coffee ☕❤️

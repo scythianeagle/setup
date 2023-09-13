@@ -19,6 +19,7 @@ What does this script do?
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
 ## How to run ❓
+Run it only on a fresh install of Ubuntu 22.04.
 ```
 curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && ./FreeIRAN.sh
 ```

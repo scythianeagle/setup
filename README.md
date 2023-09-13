@@ -23,7 +23,7 @@ What this script do?
 ```
 curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && ./FreeIRAN.sh
 ```
-## After setup has completed, don't forget to:
+## 💠 After setup has completed, don't forget to:
 
 1. Add your desired adlists via Pi-hole web interface
 ```
@@ -44,24 +44,24 @@ https://blocklistproject.github.io/Lists/redirect.txt
 https://blocklistproject.github.io/Lists/scam.txt
 https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerHosts.txt
 ```
-3. Update Pi-hole Database with
+2. Update Pi-hole Database with
 ```
 pihole -g
 ```
-4. You can connect/disconnect WireProxy with
+3. You can connect/disconnect WireProxy with
 ```
 warp y
 ```
-6. Obtain SSL Certificates with
+4. Obtain SSL Certificates with
 ```
-sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email mymail@gmail.com -d sub.domain.com
+sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email yourmail@gmail.com -d sub.domain.com
 ```
-8. Change SSH Port with
+5. Change SSH Port with
 ```
 sudo nano /etc/ssh/sshd_config
 sudo systemctl reload sshd
 ```
-8. Setup UFW
+6. Setup UFW
 ```
 sudo nano /etc/default/ufw
 sudo ufw default deny incoming
@@ -73,7 +73,7 @@ sudo ufw enable
 sudo ufw status verbose
 sudo systemctl enable ufw
 ```
-10. Restart your server with
+7. Restart your server with
 ```
 sudo shutdown -r now
 ```

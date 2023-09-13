@@ -57,3 +57,40 @@ sudo systemctl enable ufw
 ```
 sudo shutdown -r now
 ```
+Optional: Install qbittorrent-nox
+```
+sudo add-apt-repository ppa:qbittorrent-team/qbittorrent-stable
+sudo apt update
+sudo apt install qbittorrent-nox
+sudo nano /etc/systemd/system/qbittorrent-nox.service
+qbittorrent-nox
+sudo adduser --system --group qbittorrent-nox
+sudo adduser root qbittorrent-nox
+sudo systemctl daemon-reload
+sudo systemctl enable qbittorrent-nox
+sudo systemctl start qbittorrent-nox
+sudo systemctl status qbittorrent-nox
+```
+Optional: Install simplefileserver
+```
+cd /home/qbittorrent-nox/Downloads
+wget http://down.dxscx.com/simple-file-server_current_linux_amd64.tar.gz
+tar -xzvf simple-file-server_current_linux_amd64.tar.gz
+chmod 777 simplefileserver
+sudo /home/qbittorrent-nox/Downloads/simplefileserver
+```
+Optional: Warp XrayConfig
+```
+{
+  "protocol": "socks",
+  "settings": {
+    "servers": [
+      { 
+        "address": "127.0.0.1",
+        "port":1024
+      }
+    ]
+  },
+  "tag":"warp"
+},
+```

@@ -19,6 +19,10 @@ What this scriptes do:
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
+# How to run ❓
+```
+curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && ./FreeIRAN.sh
+```
 # After setup has completed, don't forget to:
 
 1. Add your desired adlists via Pi-hole web interface

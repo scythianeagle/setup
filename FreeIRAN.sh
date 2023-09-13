@@ -76,7 +76,7 @@ if [[ $enable_bbr == "y" || $enable_bbr == "Y" ]]; then
 fi
 
 # 6. Enable and configure Cron
-read -p "Do you want to enable and configure Cron? (y/n): " enable_cron
+read -p "Do you want to set up automatic nightly updates and restarts? (y/n): " enable_cron
 if [[ $enable_cron == "y" || $enable_cron == "Y" ]]; then
     sudo systemctl enable cron
     echo "Adding cron jobs..."
@@ -84,20 +84,13 @@ if [[ $enable_cron == "y" || $enable_cron == "Y" ]]; then
     echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
 fi
 
-# 7. Automatically update and restart the server every night at 01:00 GMT+3:30
-read -p "Do you want to set up automatic nightly updates and restarts? (y/n): " automatic_updates
-if [[ $automatic_updates == "y" || $automatic_updates == "Y" ]]; then
-    echo "Adding cron job for nightly updates and restarts..."
-    echo "00 21 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y && /sbin/shutdown -r now" | sudo tee -a /etc/crontab
-fi
-
-# 8. Install X-UI
+# 7. Install X-UI
 read -p "Do you want to install X-UI? (y/n): " install_xui
 if [[ $install_xui == "y" || $install_xui == "Y" ]]; then
     bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
 fi
 
-# 9. Install Pi-Hole Adblocker
+# 8. Install Pi-Hole Adblocker
 read -p "Do you want to install Pi-Hole Adblocker? (y/n): " install_pihole
 if [[ $install_pihole == "y" || $install_pihole == "Y" ]]; then
     curl -sSL https://install.pi-hole.net | bash
@@ -105,25 +98,25 @@ if [[ $install_pihole == "y" || $install_pihole == "Y" ]]; then
     echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf
 fi
 
-# 10. Install & set WARP Proxy
+# 9. Install & set WARP Proxy
 read -p "Do you want to install and set WARP Proxy? (y/n): " install_warp
 if [[ $install_warp == "y" || $install_warp == "Y" ]]; then
     bash <(curl -fsSL git.io/warp.sh) proxy
 fi
 
-# 11. Install Erlang MTProto Proxy
+# 10. Install Erlang MTProto Proxy
 read -p "Do you want to install Erlang MTProto Proxy? (y/n): " install_mtproto
 if [[ $install_mtproto == "y" || $install_mtproto == "Y" ]]; then
     curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
 fi
 
-# 12. Install Hysteria II
+# 11. Install Hysteria II
 read -p "Do you want to install Hysteria II? (y/n): " install_hysteria
 if [[ $install_hysteria == "y" || $install_hysteria == "Y" ]]; then
     bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
 fi
 
-# 13. Install TUIC v5
+# 12. Install TUIC v5
 read -p "Do you want to install TUIC v5? (y/n): " install_tuic
 if [[ $install_tuic == "y" || $install_tuic == "Y" ]]; then
     bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)

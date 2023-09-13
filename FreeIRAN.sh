@@ -2,6 +2,7 @@
 
 # Introductory message
 cat <<EOM
+
 What this script does:
 
 1. Update & Upgrade Server

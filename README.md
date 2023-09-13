@@ -4,7 +4,25 @@ One Script for setup Ubuntu Server
 Don't forget to:
 
 1. Add your desired adlists via Pi-hole web interface
-2. Update Pi-hole Database with []
+```
+https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+https://raw.githubusercontent.com/d3ward/toolz/master/src/d3host.txt
+https://big.oisd.nl/
+https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt
+https://blocklistproject.github.io/Lists/abuse.txt
+https://blocklistproject.github.io/Lists/ads.txt
+https://blocklistproject.github.io/Lists/crypto.txt
+https://blocklistproject.github.io/Lists/drugs.txt
+https://blocklistproject.github.io/Lists/fraud.txt
+https://blocklistproject.github.io/Lists/gambling.txt
+https://blocklistproject.github.io/Lists/malware.txt
+https://blocklistproject.github.io/Lists/phishing.txt
+https://blocklistproject.github.io/Lists/ransomware.txt
+https://blocklistproject.github.io/Lists/redirect.txt
+https://blocklistproject.github.io/Lists/scam.txt
+https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerHosts.txt
+```
+3. Update Pi-hole Database with
 ```
 pihole -g
 ```

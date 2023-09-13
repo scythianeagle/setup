@@ -1,7 +1,9 @@
 # FreeIRAN
-One Script for setup Ubuntu Server
+A simple bash script for setup Ubuntu Server
 
-Don't forget to:
+Manually set the parameters yourself when prompted during the setup.
+
+After setup has completed, don't forget to:
 
 1. Add your desired adlists via Pi-hole web interface
 ```

@@ -112,3 +112,10 @@ sudo /home/qbittorrent-nox/Downloads/simplefileserver
   "tag":"warp"
 },
 ```
+# Used Projects 💞
+https://github.com/pi-hole
+https://github.com/alireza0/x-ui
+https://github.com/sssvip/simple-file-server
+https://github.com/seriyps/mtproto_proxy
+https://github.com/fscarmen/warp
+https://github.com/blocklistproject/Lists

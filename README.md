@@ -7,8 +7,8 @@ What does this script do?
 3. Install Speedtest 🚀
 4. Create SWAP File 💾
 5. Enable BBR 🛸
-6. Enable and configure Cron 🏵️
-7. Automatically update and restart the server every night at 01:00 GMT+3:30 🎗️
+6. Enable and configure Cron ⏳
+7. Automatically update and restart the server every night at 01:00 GMT+3:30 🕐
 8. Install X-UI 🦄
 9. Install Pi-Hole Adblocker 🛡️
 10. Install & set WARP Proxy ✨
@@ -44,15 +44,15 @@ https://blocklistproject.github.io/Lists/redirect.txt
 https://blocklistproject.github.io/Lists/scam.txt
 https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerHosts.txt
 ```
-2. Update Pi-hole Database with
+2. Update Pi-hole Database
 ```
 pihole -g
 ```
-3. Obtain SSL Certificates with
+3. Obtain SSL Certificates
 ```
 sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email yourmail@gmail.com -d sub.domain.com
 ```
-4. Change SSH Port with
+4. Change SSH Port
 ```
 sudo nano /etc/ssh/sshd_config
 sudo systemctl reload sshd

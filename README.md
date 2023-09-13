@@ -9,13 +9,12 @@ What this script do?
 5. Enable BBR 🛸
 6. Enable and configure Cron 🏵️
 7. Automatically update and restart the server every night at 01:00 GMT+3:30 🎗️
-8. Install X-UI ❤️‍🔥
-9. Install Pi-Hole Adblocker 🦄
-10. Change Local DNS to PiHole 🛡️
-11. Install & set WARP Proxy ✨
-12. Install Erlang MTProto Proxy 💫
-13. Install Hysteria II 🌈
-14. Install TUIC v5 🔥
+8. Install X-UI 🦄
+9. Install Pi-Hole Adblocker 🛡️
+10. Install & set WARP Proxy ✨
+11. Install Erlang MTProto Proxy 💫
+12. Install Hysteria II 🌈
+13. Install TUIC v5 🔥
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
@@ -77,7 +76,12 @@ sudo systemctl enable ufw
 ```
 warp-cli set-license <your-warp-plus-license-key>
 ```
-8. Restart your server with
+8. Change Server DNS to use Pi-hole
+```
+sudo nano /etc/resolv.conf
+nameserver 127.0.0.53
+```
+10. Restart your server with
 ```
 sudo shutdown -r now
 ```

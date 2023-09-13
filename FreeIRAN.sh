@@ -89,9 +89,6 @@ bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.s
 curl -sSL https://install.pi-hole.net | bash
 pihole -a -p
 
-# Change Local DNS to Pi-Hole
-echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf
-
 # Change Lighttpd Conf
 sudo nano /etc/lighttpd/lighttpd.conf
 sudo service lighttpd restart
@@ -107,6 +104,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Install
 
 # Install TUIC v5
 bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)
+
+# Change Local DNS to Pi-Hole
+echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf
 
 # Reminder message
 cat <<EOM

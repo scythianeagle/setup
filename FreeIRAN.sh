@@ -1,24 +1,34 @@
 #!/bin/bash
 
+# Script: FreeIRAN.sh
+# Author: Namira
+# Description: A simple bash script for setup Ubuntu Server.
+# https://github.com/ErfanNamira/FreeIRAN
+
+# Check for sudo privileges
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run this script with sudo or as root."
+  exit 1
+fi
+
 # Introductory message
 cat <<EOM
 
-FreeIRAN:A simple bash script for setup Ubuntu Server
-What does this script do? you can select to:
+FreeIRAN: A simple bash script for setting up Ubuntu Server
+What does this script do? You can select to:
 
 1. Update & Upgrade Server
 2. Install essential packages
 3. Install Speedtest
 4. Create SWAP File
 5. Enable BBR
-6. Enable and configure Cron
-7. Automatically update and restart the server every night at 01:00 GMT+3:30
-8. Install X-UI
-9. Install Pi-Hole Adblocker
-10. Install & set WARP Proxy
-11. Install Erlang MTProto Proxy
-12. Install Hysteria II
-13. Install TUIC v5
+6. Automatically update and restart the server every night at 01:00 GMT+3:30
+7. Install X-UI (Alireza/MHSanaei)
+8. Install Pi-Hole Adblocker
+9. Install & set WARP Proxy
+10. Install Erlang MTProto Proxy
+11. Install Hysteria II
+12. Install TUIC v5
 
 Manually set the parameters yourself when prompted during the setup.
 
@@ -32,6 +42,11 @@ if [[ $proceed != "y" && $proceed != "Y" ]]; then
     exit 0
 fi
 
+# Helper function to check if a package is installed
+package_installed() {
+  dpkg -l | grep -q $1
+}
+
 # 1. Update & Upgrade Server
 read -p "Do you want to update & upgrade the server? (y/n): " update_upgrade
 if [[ $update_upgrade == "y" || $update_upgrade == "Y" ]]; then
@@ -41,14 +56,21 @@ fi
 # 2. Install essential packages
 read -p "Do you want to install essential packages? (y/n): " install_packages
 if [[ $install_packages == "y" || $install_packages == "Y" ]]; then
-    sudo apt install -y curl nano certbot cron ufw htop dialog
+    packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "dialog" "net-tools")
+    for pkg in "${packages[@]}"; do
+        if ! package_installed $pkg; then
+            sudo apt install -y $pkg
+        fi
+    done
 fi
 
 # 3. Install Speedtest
 read -p "Do you want to install Speedtest? (y/n): " install_speedtest
 if [[ $install_speedtest == "y" || $install_speedtest == "Y" ]]; then
-    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
-    sudo apt-get install -y speedtest-cli
+    if ! package_installed "speedtest-cli"; then
+        curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
+        sudo apt-get install -y speedtest-cli
+    fi
 fi
 
 # 4. Create SWAP File
@@ -85,13 +107,19 @@ if [[ $enable_cron == "y" || $enable_cron == "Y" ]]; then
     echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
 fi
 
-# 7. Install X-UI
-read -p "Do you want to install X-UI? (y/n): " install_xui
+# 7. Install Alireza X-UI
+read -p "Do you want to install Alireza X-UI? (y/n): " install_xui
 if [[ $install_xui == "y" || $install_xui == "Y" ]]; then
     bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
 fi
 
-# 8. Install Pi-Hole Adblocker
+# 8. Install MHSanaei X-UI
+read -p "Do you want to install MHSanaei X-UI? (y/n): " install_xui2
+if [[ $install_xui2 == "y" || $install_xui2 == "Y" ]]; then
+    bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+fi
+
+# 9. Install Pi-Hole Adblocker
 read -p "Do you want to install Pi-Hole Adblocker? (y/n): " install_pihole
 if [[ $install_pihole == "y" || $install_pihole == "Y" ]]; then
     curl -sSL https://install.pi-hole.net | bash
@@ -99,25 +127,25 @@ if [[ $install_pihole == "y" || $install_pihole == "Y" ]]; then
     echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf
 fi
 
-# 9. Install & set WARP Proxy
+# 10. Install & set WARP Proxy
 read -p "Do you want to install and set WARP Proxy? (y/n): " install_warp
 if [[ $install_warp == "y" || $install_warp == "Y" ]]; then
     bash <(curl -fsSL git.io/warp.sh) proxy
 fi
 
-# 10. Install Erlang MTProto Proxy
+# 11. Install Erlang MTProto Proxy
 read -p "Do you want to install Erlang MTProto Proxy? (y/n): " install_mtproto
 if [[ $install_mtproto == "y" || $install_mtproto == "Y" ]]; then
     curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
 fi
 
-# 11. Install Hysteria II
+# 12. Install Hysteria II
 read -p "Do you want to install Hysteria II? (y/n): " install_hysteria
 if [[ $install_hysteria == "y" || $install_hysteria == "Y" ]]; then
     bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
 fi
 
-# 12. Install TUIC v5
+# 13. Install TUIC v5
 read -p "Do you want to install TUIC v5? (y/n): " install_tuic
 if [[ $install_tuic == "y" || $install_tuic == "Y" ]]; then
     bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)

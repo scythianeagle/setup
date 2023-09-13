@@ -113,9 +113,19 @@ sudo /home/qbittorrent-nox/Downloads/simplefileserver
 },
 ```
 # Used Projects 💞
+```
 https://github.com/pi-hole
 https://github.com/alireza0/x-ui
+https://github.com/deathline94/tuic-v5-installer
+https://github.com/deathline94/Hysteria-Installer
 https://github.com/sssvip/simple-file-server
 https://github.com/seriyps/mtproto_proxy
 https://github.com/fscarmen/warp
 https://github.com/blocklistproject/Lists
+```
+# Buy Me a Coffee ☕❤️
+```
+Tron USDT (TRC20): TMrJHiTnE6wMqHarp2SxVEmJfKXBoTSnZ4
+LiteCoin (LTC): ltc1qwhd8jpwumg5uywgv028h3lnsck8mjxhxnp4rja
+BTC: bc1q2tjjyg60hhsuyauha6uptgrwm32sarhmjlwvae
+```

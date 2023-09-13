@@ -24,89 +24,110 @@ Manually set the parameters yourself when prompted during the setup.
 EOM
 
 # Ask the user if they want to proceed
-read -p "Do you want to proceed with the setup? (yes/no): " proceed
+read -p "Do you want to proceed with the setup? (y/n): " proceed
 
-if [[ $proceed != "yes" && $proceed != "YES" ]]; then
+if [[ $proceed != "y" && $proceed != "Y" ]]; then
     echo "Setup aborted."
     exit 0
 fi
 
-# Update & Upgrade Server
-sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean && sudo apt clean
+# 1. Update & Upgrade Server
+read -p "Do you want to update & upgrade the server? (y/n): " update_upgrade
+if [[ $update_upgrade == "y" || $update_upgrade == "Y" ]]; then
+    sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean && sudo apt clean
+fi
 
-# Install essential packages
-sudo apt install -y curl nano certbot cron ufw htop dialog
+# 2. Install essential packages
+read -p "Do you want to install essential packages? (y/n): " install_packages
+if [[ $install_packages == "y" || $install_packages == "Y" ]]; then
+    sudo apt install -y curl nano certbot cron ufw htop dialog
+fi
 
-# Clean journal logs
-sudo journalctl --vacuum-size=50M
+# 3. Install Speedtest
+read -p "Do you want to install Speedtest? (y/n): " install_speedtest
+if [[ $install_speedtest == "y" || $install_speedtest == "Y" ]]; then
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
+    sudo apt-get install -y speedtest-cli
+fi
 
-# Install Speedtest
-curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
-sudo apt-get install -y speedtest-cli
-
-# Ask the user if they want to create a SWAP file
-read -p "Do you want to create a SWAP file? (yes/no): " create_swap
-
-if [[ $create_swap == "yes" || $create_swap == "YES" ]]; then
-    # Ask for the SWAP file size
+# 4. Create SWAP File
+read -p "Do you want to create a SWAP file? (y/n): " create_swap
+if [[ $create_swap == "y" || $create_swap == "Y" ]]; then
     read -p "Enter the SWAP file size (e.g., 1G for 1GB): " swap_size
-
-    # Create the SWAP file with the specified size
     sudo fallocate -l $swap_size /swapfile
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
     echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-
-    # Set sysctl parameters
     sudo sysctl vm.swappiness=10
     sudo sysctl vm.vfs_cache_pressure=50
     echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
     echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
-
     echo "SWAP file of size $swap_size created and configured."
 else
     echo "No SWAP file will be created."
 fi
 
-# Set TCP congestion control settings
-echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
-echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
+# 5. Enable BBR
+read -p "Do you want to enable BBR? (y/n): " enable_bbr
+if [[ $enable_bbr == "y" || $enable_bbr == "Y" ]]; then
+    echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
+    echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
+fi
 
-# Enable and configure Cron
-sudo systemctl enable cron
+# 6. Enable and configure Cron
+read -p "Do you want to enable and configure Cron? (y/n): " enable_cron
+if [[ $enable_cron == "y" || $enable_cron == "Y" ]]; then
+    sudo systemctl enable cron
+    echo "Adding cron jobs..."
+    echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
+    echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
+fi
 
-# Add cron jobs to update and upgrade the system daily at 00:30 GMT+3:30
-echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
+# 7. Automatically update and restart the server every night at 01:00 GMT+3:30
+read -p "Do you want to set up automatic nightly updates and restarts? (y/n): " automatic_updates
+if [[ $automatic_updates == "y" || $automatic_updates == "Y" ]]; then
+    echo "Adding cron job for nightly updates and restarts..."
+    echo "00 21 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y && /sbin/shutdown -r now" | sudo tee -a /etc/crontab
+fi
 
-# Add a cron job to reboot the server daily at 01:00 GMT+3:30
-echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
+# 8. Install X-UI
+read -p "Do you want to install X-UI? (y/n): " install_xui
+if [[ $install_xui == "y" || $install_xui == "Y" ]]; then
+    bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
+fi
 
-# Install X-UI
-bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
+# 9. Install Pi-Hole Adblocker
+read -p "Do you want to install Pi-Hole Adblocker? (y/n): " install_pihole
+if [[ $install_pihole == "y" || $install_pihole == "Y" ]]; then
+    curl -sSL https://install.pi-hole.net | bash
+    pihole -a -p
+    echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf
+fi
 
-# Install Pi-Hole
-curl -sSL https://install.pi-hole.net | bash
-pihole -a -p
+# 10. Install & set WARP Proxy
+read -p "Do you want to install and set WARP Proxy? (y/n): " install_warp
+if [[ $install_warp == "y" || $install_warp == "Y" ]]; then
+    bash <(curl -fsSL git.io/warp.sh) proxy
+fi
 
-# Change Lighttpd Conf
-sudo nano /etc/lighttpd/lighttpd.conf
-sudo service lighttpd restart
+# 11. Install Erlang MTProto Proxy
+read -p "Do you want to install Erlang MTProto Proxy? (y/n): " install_mtproto
+if [[ $install_mtproto == "y" || $install_mtproto == "Y" ]]; then
+    curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
+fi
 
-# Install WARP Proxy
-bash <(curl -fsSL git.io/warp.sh) proxy
+# 12. Install Hysteria II
+read -p "Do you want to install Hysteria II? (y/n): " install_hysteria
+if [[ $install_hysteria == "y" || $install_hysteria == "Y" ]]; then
+    bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
+fi
 
-# Install Erlang MTProto Proxy
-curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
-
-# Install Hysteria II
-bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
-
-# Install TUIC v5
-bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)
-
-# Change Local DNS to Pi-Hole
-echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf
+# 13. Install TUIC v5
+read -p "Do you want to install TUIC v5? (y/n): " install_tuic
+if [[ $install_tuic == "y" || $install_tuic == "Y" ]]; then
+    bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)
+fi
 
 # Reminder message
 cat <<EOM

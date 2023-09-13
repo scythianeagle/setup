@@ -93,8 +93,8 @@ pihole -a -p
 sudo nano /etc/lighttpd/lighttpd.conf
 sudo service lighttpd restart
 
-# Install WARP WireProxy
-wget -N https://raw.githubusercontent.com/fscarmen/warp/main/menu.sh && bash menu.sh
+# Install WARP Proxy
+bash <(curl -fsSL git.io/warp.sh) proxy
 
 # Install Erlang MTProto Proxy
 curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh

@@ -1,5 +1,20 @@
-# FreeIRAN 🕊️🇮🇷
+# FreeIRAN 🕊️
 🌟 A simple bash script for setup Ubuntu Server
+What this scriptes do:
+1. Update & Upgrade Server 🧬
+2. Install essential packages 🎉
+3. Install Speedtest 🚀
+4. Create SWAP File 💾
+5. Enable BBR 🛸
+6. Enable and configure Cron 🏵️
+7. Automatically update and restart the server every night at 01:00 GMT+3:30 🎗️
+8. Install X-UI ❤️‍🔥
+9. Install Pi-Hole Adblocker 💝
+10. Change Local DNS to PiHole 🎯
+11. Install WARP WireProxy ✨
+12. Install Erlang MTProto Proxy 💫
+13. Install Hysteria II 🌈
+14. Install TUIC v5 🔥
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 

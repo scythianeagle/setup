@@ -1,5 +1,6 @@
 # FreeIRAN 🕊️
 🌟 A simple bash script for setup Ubuntu Server
+
 What this scriptes do:
 1. Update & Upgrade Server 🧬
 2. Install essential packages 🎉

@@ -1,7 +1,7 @@
 # FreeIRAN 🕊️
 🌟 A simple bash script for setup Ubuntu Server
 
-What does this script do?
+What does this script do? you can select to:
 1. Update & Upgrade Server 🧬
 2. Install essential packages 🎉
 3. Install Speedtest 🚀
@@ -96,15 +96,29 @@ sudo systemctl enable qbittorrent-nox
 sudo systemctl start qbittorrent-nox
 sudo systemctl status qbittorrent-nox
 ```
+### qbittorrent-nox.service configuration
+```
+[Unit]
+Description=qBittorrent-nox
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/qbittorrent-nox -d --webui-port=8000
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
 ## Optional: Install simplefileserver 🪩
 
 ⚠️ simplefileserver DO NOT Support Authentication
 ```
 cd /home/qbittorrent-nox/Downloads
-wget http://down.dxscx.com/simple-file-server_current_linux_amd64.tar.gz
-tar -xzvf simple-file-server_current_linux_amd64.tar.gz
+wget https://github.com/sssvip/simple-file-server/releases/download/v0.1.4/simple-file-server_0.1.4_linux_amd64.tar.gz
+tar -xzvf simple-file-server_0.1.4_linux_amd64.tar.gz
 chmod 777 simplefileserver
-sudo /home/qbittorrent-nox/Downloads/simplefileserver
+sudo /home/qbittorrent-nox/Downloads/simplefileserver 80
 ```
 ## Optional: Warp XrayConfig ✨
 ```

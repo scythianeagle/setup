@@ -1,5 +1,36 @@
 #!/bin/bash
 
+# Introductory message
+cat <<EOM
+What this script does:
+
+1. Update & Upgrade Server
+2. Install essential packages
+3. Install Speedtest
+4. Create SWAP File
+5. Enable BBR
+6. Enable and configure Cron
+7. Automatically update and restart the server every night at 01:00 GMT+3:30
+8. Install X-UI
+9. Install Pi-Hole Adblocker
+10. Change Local DNS to PiHole
+11. Install WARP WireProxy
+12. Install Erlang MTProto Proxy
+13. Install Hysteria II
+14. Install TUIC v5
+
+Manually set the parameters yourself when prompted during the setup.
+
+EOM
+
+# Ask the user if they want to proceed
+read -p "Do you want to proceed with the setup? (yes/no): " proceed
+
+if [[ $proceed != "yes" && $proceed != "YES" ]]; then
+    echo "Setup aborted."
+    exit 0
+fi
+
 # Update & Upgrade Server
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean && sudo apt clean
 

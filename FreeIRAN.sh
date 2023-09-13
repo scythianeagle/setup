@@ -3,7 +3,8 @@
 # Introductory message
 cat <<EOM
 
-What this script does:
+FreeIRAN:A simple bash script for setup Ubuntu Server
+What does this script do? you can select to:
 
 1. Update & Upgrade Server
 2. Install essential packages

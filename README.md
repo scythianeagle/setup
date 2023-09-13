@@ -47,20 +47,16 @@ https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerHo
 ```
 pihole -g
 ```
-3. You can connect/disconnect WireProxy with
-```
-warp y
-```
-4. Obtain SSL Certificates with
+3. Obtain SSL Certificates with
 ```
 sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email yourmail@gmail.com -d sub.domain.com
 ```
-5. Change SSH Port with
+4. Change SSH Port with
 ```
 sudo nano /etc/ssh/sshd_config
 sudo systemctl reload sshd
 ```
-6. Setup UFW
+5. Setup UFW
 ```
 sudo nano /etc/default/ufw
 sudo ufw default deny incoming
@@ -72,16 +68,16 @@ sudo ufw enable
 sudo ufw status verbose
 sudo systemctl enable ufw
 ```
-7. Change WARP License Key
+6. Change WARP License Key
 ```
 warp-cli set-license <your-warp-plus-license-key>
 ```
-8. Change Server DNS to use Pi-hole
+7. Change Server DNS to use Pi-hole
 ```
 sudo nano /etc/resolv.conf
 nameserver 127.0.0.53
 ```
-10. Restart your server with
+8. Restart your server with
 ```
 sudo shutdown -r now
 ```
@@ -117,7 +113,7 @@ sudo /home/qbittorrent-nox/Downloads/simplefileserver
     "servers": [
       { 
         "address": "127.0.0.1",
-        "port":1024
+        "port":40000
       }
     ]
   },

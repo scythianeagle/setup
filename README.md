@@ -1,9 +1,9 @@
-# FreeIRAN
-A simple bash script for setup Ubuntu Server
+# FreeIRAN 🕊️🇮🇷
+🌟 A simple bash script for setup Ubuntu Server
 
-Manually set the parameters yourself when prompted during the setup.
+⚠️ Manually set the parameters yourself when prompted during the setup.
 
-After setup has completed, don't forget to:
+# After setup has completed, don't forget to:
 
 1. Add your desired adlists via Pi-hole web interface
 ```
@@ -57,7 +57,7 @@ sudo systemctl enable ufw
 ```
 sudo shutdown -r now
 ```
-Optional: Install qbittorrent-nox
+# Optional: Install qbittorrent-nox
 ```
 sudo add-apt-repository ppa:qbittorrent-team/qbittorrent-stable
 sudo apt update
@@ -71,7 +71,7 @@ sudo systemctl enable qbittorrent-nox
 sudo systemctl start qbittorrent-nox
 sudo systemctl status qbittorrent-nox
 ```
-Optional: Install simplefileserver
+# Optional: Install simplefileserver
 ```
 cd /home/qbittorrent-nox/Downloads
 wget http://down.dxscx.com/simple-file-server_current_linux_amd64.tar.gz
@@ -79,7 +79,7 @@ tar -xzvf simple-file-server_current_linux_amd64.tar.gz
 chmod 777 simplefileserver
 sudo /home/qbittorrent-nox/Downloads/simplefileserver
 ```
-Optional: Warp XrayConfig
+# Optional: Warp XrayConfig
 ```
 {
   "protocol": "socks",

@@ -117,9 +117,9 @@ Setup completed. Don't forget to:
 2. Update the Pi-hole database with [pihole -g].
 3. Obtain SSL Certificates with [sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email yourmail@gmail.com -d sub.domain.com].
 4. Change the SSH Port with [sudo nano /etc/ssh/sshd_config].
-5. Change WARP License Key [warp-cli set-license <your-warp-plus-license-key>]
-6. Change Server DNS to use Pi-hole [sudo nano /etc/resolv.conf]
-7. Set up UFW.
+5. Set up UFW.
+6. Change WARP License Key [warp-cli set-license <your-warp-plus-license-key>]
+7. Change Server DNS to use Pi-hole [sudo nano /etc/resolv.conf]
 8. Restart your server with [sudo shutdown -r now].
 
 EOM

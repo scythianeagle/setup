@@ -48,6 +48,7 @@ https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerHo
 pihole -g
 ```
 3. Modify Lighttpd
+
 ⭕ If you have installed Pi-hole, then Lighttpd is listening on port 80 by default. If you haven't changed the Lighttpd port, it's necessary to stop it before obtaining SSL certificates. Below, you can find commands to start, stop, restart, and modify the configuration of Lighttpd.
 ```
 sudo nano /etc/lighttpd/lighttpd.conf

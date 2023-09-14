@@ -1,5 +1,5 @@
 # FreeIRAN 🕊️
-🌟 A simple bash script for setup Ubuntu Server
+🌟 A simple bash script for setting up Ubuntu Server
 
 What does this script do? you can select to:
 1. Update & Upgrade Server 🧬

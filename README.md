@@ -47,16 +47,26 @@ https://raw.githubusercontent.com/MasterKia/PersianBlocker/main/PersianBlockerHo
 ```
 pihole -g
 ```
-3. Obtain SSL Certificates
+3. Modify Lighttpd
+⭕ If you have installed Pi-hole, then Lighttpd is listening on port 80 by default. If you haven't changed the Lighttpd port, it's necessary to stop it before obtaining SSL certificates. Below, you can find commands to start, stop, restart, and modify the configuration of Lighttpd.
+```
+sudo nano /etc/lighttpd/lighttpd.conf
+```
+```
+sudo systemctl start lighttpd.service
+sudo systemctl stop lighttpd.service
+sudo systemctl restart lighttpd.service
+```
+5. Obtain SSL Certificates 
 ```
 sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email yourmail@gmail.com -d sub.domain.com
 ```
-4. Change SSH Port
+5. Change SSH Port
 ```
 sudo nano /etc/ssh/sshd_config
 sudo systemctl reload sshd
 ```
-5. Setup UFW
+6. Setup UFW
 ```
 sudo nano /etc/default/ufw
 sudo ufw default deny incoming
@@ -68,15 +78,15 @@ sudo ufw enable
 sudo ufw status verbose
 sudo systemctl enable ufw
 ```
-6. Change WARP License Key
+7. Change WARP License Key
 ```
 warp-cli set-license <your-warp-plus-license-key>
 ```
-7. WARP Status
+8. WARP Status
 ```
 bash <(curl -fsSL git.io/warp.sh) status
 ```
-8. Change Server DNS to use Pi-hole
+9. Change Server DNS to use Pi-hole
 ```
 sudo nano /etc/resolv.conf
 nameserver 127.0.0.53
@@ -93,7 +103,7 @@ You need to add the following settings to the 'ab-cloud-init.yaml' file:
 nameservers:
   addresses: [127.0.0.53]
 ```
-9. Restart your server with
+10. Restart your server with
 ```
 sudo shutdown -r now
 ```

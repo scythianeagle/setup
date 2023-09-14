@@ -135,7 +135,7 @@ tar -xzvf simple-file-server_0.1.4_linux_amd64.tar.gz
 chmod 777 simplefileserver
 sudo /home/qbittorrent-nox/Downloads/simplefileserver 80
 ```
-## Optional: Warp XrayConfig ✨
+## Optional: WARP XrayConfig ✨
 ```
 {
   "protocol": "socks",

@@ -125,6 +125,18 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 ```
+## Optional: Install AriaFileServer 🪄
+
+See HTTPS version at https://github.com/ErfanNamira/AriaFileServer
+### ⭐ HTTP Version
+✨ http://IP:Port
+```
+cd /home/qbittorrent-nox/Downloads
+wget https://raw.githubusercontent.com/ErfanNamira/AriaFileServer/main/AriaFileServerHTTP.py
+sudo apt install python3-pip
+pip3 install flask
+python3 AriaFileServerHTTP.py
+```
 ## Optional: Install simplefileserver 🪩
 
 ⚠️ simplefileserver DO NOT Support Authentication

@@ -1,5 +1,6 @@
 # FreeIRAN 🕊️
 🌟 A Simple Bash Script With TUI For Setting Up Ubuntu Server
+
 🏹 Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
 
 What does this script do? you can select to:

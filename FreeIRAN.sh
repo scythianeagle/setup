@@ -1,171 +1,338 @@
 #!/bin/bash
 
-# Script: FreeIRAN.sh
-# Author: Namira
-# Description: A simple bash script for setup Ubuntu Server.
+# FreeIRAN v.2.0.0
+# Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
+# ErfanNamira
 # https://github.com/ErfanNamira/FreeIRAN
 
 # Check for sudo privileges
-if [ "$EUID" -ne 0 ]; then
-  echo "Please run this script with sudo or as root."
-  exit 1
+if [[ $EUID -ne 0 ]]; then
+  if [[ $(sudo -n true 2>/dev/null) ]]; then
+    echo "This script will be run with sudo privileges."
+  else
+    echo "This script must be run with sudo privileges."
+    exit 1
+  fi
 fi
 
-# Introductory message
-cat <<EOM
-
-FreeIRAN: A simple bash script for setting up Ubuntu Server
-What does this script do? You can select to:
-
-1. Update & Upgrade Server
-2. Install essential packages
-3. Install Speedtest
-4. Create SWAP File
-5. Enable BBR
-6. Automatically update and restart the server every night at 01:00 GMT+3:30
-7. Install X-UI (Alireza/MHSanaei)
-8. Install Pi-Hole Adblocker
-9. Install & set WARP Proxy
-10. Install Erlang MTProto Proxy
-11. Install Hysteria II
-12. Install TUIC v5
-
-Manually set the parameters yourself when prompted during the setup.
-
-EOM
-
-# Ask the user if they want to proceed
-read -p "Do you want to proceed with the setup? (y/n): " proceed
-
-if [[ $proceed != "y" && $proceed != "Y" ]]; then
-    echo "Setup aborted."
-    exit 0
-fi
-
-# Helper function to check if a package is installed
-package_installed() {
-  dpkg -l | grep -q $1
+# Function to update and upgrade the server
+update_and_upgrade() {
+  sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean && sudo apt clean
 }
 
-# 1. Update & Upgrade Server
-read -p "Do you want to update & upgrade the server? (y/n): " update_upgrade
-if [[ $update_upgrade == "y" || $update_upgrade == "Y" ]]; then
-    sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean && sudo apt clean
-fi
+# Function to install essential packages
+install_essential_packages() {
+  packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "dialog" "net-tools")
 
-# 2. Install essential packages
-read -p "Do you want to install essential packages? (y/n): " install_packages
-if [[ $install_packages == "y" || $install_packages == "Y" ]]; then
-    packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "dialog" "net-tools")
-    for pkg in "${packages[@]}"; do
-        if ! package_installed $pkg; then
-            sudo apt install -y $pkg
-        fi
-    done
-fi
+  package_installed() {
+    dpkg -l | grep -q "^ii  $1"
+  }
 
-# 3. Install Speedtest
-read -p "Do you want to install Speedtest? (y/n): " install_speedtest
-if [[ $install_speedtest == "y" || $install_speedtest == "Y" ]]; then
-    if ! package_installed "speedtest-cli"; then
-        curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
-        sudo apt-get install -y speedtest-cli
+  for pkg in "${packages[@]}"; do
+    if ! package_installed "$pkg"; then
+      sudo apt install -y "$pkg"
     fi
-fi
+  done
+}
 
-# 4. Create SWAP File
-read -p "Do you want to create a SWAP file? (y/n): " create_swap
-if [[ $create_swap == "y" || $create_swap == "Y" ]]; then
-    read -p "Enter the SWAP file size (e.g., 1G for 1GB): " swap_size
-    sudo fallocate -l $swap_size /swapfile
-    sudo chmod 600 /swapfile
-    sudo mkswap /swapfile
-    sudo swapon /swapfile
-    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-    sudo sysctl vm.swappiness=10
-    sudo sysctl vm.vfs_cache_pressure=50
-    echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
-    echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
-    echo "SWAP file of size $swap_size created and configured."
-else
-    echo "No SWAP file will be created."
-fi
+# Function to install Speedtest
+install_speedtest() {
+  dialog --title "Install Speedtest" --yesno "Do you want to install Speedtest?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
+    sudo apt-get install speedtest
+    dialog --msgbox "Speedtest installed successfully." 10 40
+  else
+    dialog --msgbox "Skipping installation of Speedtest." 10 40
+  fi
+}
 
-# 5. Enable BBR
-read -p "Do you want to enable BBR? (y/n): " enable_bbr
-if [[ $enable_bbr == "y" || $enable_bbr == "Y" ]]; then
-    echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
-    echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
-fi
+# Function to create a swap file
+create_swap_file() {
+  if [ -f /swapfile ]; then
+    dialog --title "Swap File" --msgbox "A swap file already exists. Skipping swap file creation." 10 60
+  else
+    dialog --title "Swap File" --inputbox "Enter the size of the swap file (e.g., 2G for 2 gigabytes):" 10 60 2> swap_size.txt
+    swap_size=$(cat swap_size.txt)
 
-# 6. Enable and configure Cron
-read -p "Do you want to set up automatic nightly updates and restarts? (y/n): " enable_cron
-if [[ $enable_cron == "y" || $enable_cron == "Y" ]]; then
-    sudo systemctl enable cron
-    echo "Adding cron jobs..."
-    echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
-    echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
-fi
+    if [[ "$swap_size" =~ ^[0-9]+[GgMm]$ ]]; then
+      sudo fallocate -l "$swap_size" /swapfile
+      sudo chmod 600 /swapfile
+      sudo mkswap /swapfile
+      sudo swapon /swapfile
+	    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+      sudo sysctl vm.swappiness=10
+      sudo sysctl vm.vfs_cache_pressure=50
+	    echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
+      echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
+      dialog --msgbox "Swap file created successfully with a size of $swap_size." 10 60
+    else
+      dialog --msgbox "Invalid swap file size. Please provide a valid size (e.g., 2G for 2 gigabytes)." 10 60
+    fi
+  fi
+}
 
-# 7. Install Alireza X-UI
-read -p "Do you want to install Alireza X-UI? (y/n): " install_xui
-if [[ $install_xui == "y" || $install_xui == "Y" ]]; then
-    bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
-fi
+# Function to enable BBR
+enable_bbr() {
+  echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
+  echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
 
-# 8. Install MHSanaei X-UI
-read -p "Do you want to install MHSanaei X-UI? (y/n): " install_xui2
-if [[ $install_xui2 == "y" || $install_xui2 == "Y" ]]; then
-    bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
-fi
+  dialog --msgbox "BBR enabled successfully." 10 40
+}
 
-# 9. Install Pi-Hole Adblocker
-read -p "Do you want to install Pi-Hole Adblocker? (y/n): " install_pihole
-if [[ $install_pihole == "y" || $install_pihole == "Y" ]]; then
-    curl -sSL https://install.pi-hole.net | bash
+# Function to enable and configure Cron
+enable_and_configure_cron() {
+  echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
+  echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
+
+  dialog --msgbox "Cron enabled and configured successfully." 10 40
+}
+
+# Function to install Multiprotocol VPN Panel
+install_vpn_panel() {
+  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 3 \
+    "1" "X-UI | Alireza" \
+    "2" "X-UI | MHSanaei" \
+    "3" "reality-ezpz | aleskxyz" 2> vpn_choice.txt
+
+  vpn_choice=$(cat vpn_choice.txt)
+
+  case $vpn_choice in
+    "1")
+      bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
+      ;;
+    "2")
+      bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+      ;;
+    "3")
+      bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
+      ;;
+    *)
+      dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
+      ;;
+  esac
+}
+
+# Function to obtain SSL certificates
+obtain_ssl_certificates() {
+  dialog --title "Obtain SSL Certificates" --yesno "Do you want to obtain SSL certificates?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    dialog --title "SSL Certificate Information" --inputbox "Enter your email:" 10 60 2> email.txt
+    email=$(cat email.txt)
+    dialog --title "SSL Certificate Information" --inputbox "Enter your domain (e.g., sub.domain.com):" 10 60 2> domain.txt
+    domain=$(cat domain.txt)
+
+    if [ -n "$email" ] && [ -n "$domain" ]; then
+      sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email "$email" -d "$domain"
+
+      dialog --msgbox "SSL certificates obtained successfully for $domain in /etc/letsencrypt/live." 10 60
+    else
+      dialog --msgbox "Both email and domain are required to obtain SSL certificates." 10 60
+    fi
+  else
+    dialog --msgbox "Skipping SSL certificate acquisition." 10 40
+  fi
+}
+
+# Function to set up Pi-Hole
+setup_pi_hole() {
+  curl -sSL https://install.pi-hole.net | bash
+
+  dialog --title "Change Pi-Hole Web Interface Password" --yesno "Do you want to change the Pi-Hole web interface password?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
     pihole -a -p
-    echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf
-fi
+    dialog --msgbox "Pi-Hole web interface password changed successfully." 10 60
+  else
+    dialog --msgbox "Skipping Pi-Hole web interface password change." 10 40
+  fi
 
-# 10. Install & set WARP Proxy
-read -p "Do you want to install and set WARP Proxy? (y/n): " install_warp
-if [[ $install_warp == "y" || $install_warp == "Y" ]]; then
+  if [ -f /etc/lighttpd/lighttpd.conf ]; then
+    dialog --title "Change Lighttpd Port" --yesno "If you have installed Pi-Hole, then Lighttpd is listening on port 80 by default. Do you want to change the Lighttpd port?" 10 60
+    response=$?
+    if [ $response -eq 0 ]; then
+      sudo nano /etc/lighttpd/lighttpd.conf
+      dialog --msgbox "Lighttpd port changed." 10 60
+    else
+      dialog --msgbox "Skipping Lighttpd port change." 10 40
+    fi
+  fi
+}
+
+# Function to change SSH port
+change_ssh_port() {
+  # Prompt the user for the new SSH port
+  dialog --title "Change SSH Port" --inputbox "Enter the new SSH port:" 10 60 2> ssh_port.txt
+  new_ssh_port=$(cat ssh_port.txt)
+
+  # Verify that a valid port number is provided
+  if [[ $new_ssh_port =~ ^[0-9]+$ ]]; then
+    # Remove the '#' comment from the 'Port' line in sshd_config (if present)
+    sudo sed -i "/^#*Port/s/^#*Port/Port/" /etc/ssh/sshd_config
+
+    # Update SSH port in sshd_config
+    sudo sed -i "s/^Port .*/Port $new_ssh_port/" /etc/ssh/sshd_config
+
+    # Reload SSH service to apply changes
+    sudo systemctl reload sshd
+
+    dialog --msgbox "SSH port changed to $new_ssh_port. Please make sure to update your SSH client configuration." 10 60
+  else
+    dialog --msgbox "Invalid port number. Please provide a valid port." 10 60
+  fi
+}
+
+# Function to enable UFW
+enable_ufw() {
+  # Set defaults
+  sudo ufw default deny incoming
+  sudo ufw default allow outgoing
+
+  # Prompt the user for the SSH port to allow
+  dialog --title "Enable UFW - SSH Port" --inputbox "Enter the SSH port to allow:" 10 60 2> ssh_port.txt
+  ssh_port=$(cat ssh_port.txt)
+
+  # Allow SSH port
+  if [ -n "$ssh_port" ]; then
+    sudo ufw allow "$ssh_port"/tcp
+    sudo ufw limit "$ssh_port"/tcp
+  fi
+
+  # Prompt the user for additional ports to open
+  dialog --title "Enable UFW - Additional Ports" --inputbox "Enter additional ports to open (comma-separated, e.g., 80,443):" 10 60 2> ufw_ports.txt
+  ufw_ports=$(cat ufw_ports.txt)
+
+  # Allow additional ports specified by the user
+  if [ -n "$ufw_ports" ]; then
+    IFS=',' read -ra ports_array <<< "$ufw_ports"
+    for port in "${ports_array[@]}"; do
+      sudo ufw allow "$port"
+    done
+  fi
+
+  # Enable UFW to start at boot
+  sudo ufw enable
+  sudo systemctl enable ufw
+}
+
+# Function to install and configure WARP Proxy
+install_configure_warp_proxy() {
+  dialog --title "Install & Configure WARP Proxy" --yesno "Do you want to install and configure WARP Proxy?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
     bash <(curl -fsSL git.io/warp.sh) proxy
-fi
+    dialog --msgbox "WARP Proxy installed and configured successfully." 10 60
+  else
+    dialog --msgbox "Skipping installation and configuration of WARP Proxy." 10 60
+  fi
+}
 
-# 11. Install Erlang MTProto Proxy
-read -p "Do you want to install Erlang MTProto Proxy? (y/n): " install_mtproto
-if [[ $install_mtproto == "y" || $install_mtproto == "Y" ]]; then
-    curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
-fi
+# Function to deploy Erlang MTProto Proxy
+deploy_erlang_mtproto_proxy() {
+  curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
+}
 
-# 12. Install Hysteria II
-read -p "Do you want to install Hysteria II? (y/n): " install_hysteria
-if [[ $install_hysteria == "y" || $install_hysteria == "Y" ]]; then
-    bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
-fi
+# Function to setup Hysteria II
+setup_hysteria_ii() {
+  bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
+}
 
-# 13. Install TUIC v5
-read -p "Do you want to install TUIC v5? (y/n): " install_tuic
-if [[ $install_tuic == "y" || $install_tuic == "Y" ]]; then
-    bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)
-fi
+# Function to setup TUIC v5
+setup_tuic_v5() {
+  bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)
+}
 
-# Reminder message
-cat <<EOM
+# Function to reboot the system
+reboot_system() {
+  dialog --title "Reboot System" --yesno "Do you want to reboot the system?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    sudo reboot
+  else
+    dialog --msgbox "System reboot canceled." 10 40
+  fi
+}
 
-Setup completed. Don't forget to:
+# Main menu
+while true; do
+  menu_choice=$(dialog --clear \
+    --backtitle "[FreeIRAN]" \
+    --title "FreeIRAN - Server Setup Script" \
+    --menu "Select an option:" 15 60 16 \
+    "1" "Update & Upgrade Server" \
+    "2" "Install Essential Packages" \
+    "3" "Install Speedtest" \
+    "4" "Create SWAP File (if needed)" \
+    "5" "Enable BBR" \
+    "6" "Schedule Automatic Updates" \
+    "7" "Install Multiprotocol VPN Panel" \
+    "8" "Obtain SSL Certificates" \
+    "9" "Set Up Pi-Hole" \
+    "10" "Install & Configure WARP Proxy" \
+    "11" "Deploy Erlang MTProto Proxy" \
+    "12" "Setup Hysteria II" \
+    "13" "Setup TUIC v5" \
+    "14" "Change SSH Port" \
+    "15" "Enable UFW (Uncomplicated Firewall)" \
+    "16" "Reboot System" \
+    3>&1 1>&2 2>&3)
+  
+  exit_status=$?
+  if [ $exit_status -ne 0 ]; then
+    clear
+    exit 0
+  fi
 
-1. Add your desired adlists via the Pi-hole web interface.
-2. Update the Pi-hole database with [pihole -g].
-3. Obtain SSL Certificates with [sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email yourmail@gmail.com -d sub.domain.com].
-4. Change the SSH Port with [sudo nano /etc/ssh/sshd_config].
-5. Set up UFW.
-6. Change WARP License Key [warp-cli set-license <your-warp-plus-license-key>]
-7. Change Server DNS to use Pi-hole [sudo nano /etc/resolv.conf]
-8. Restart your server with [sudo shutdown -r now].
-
-EOM
-
-# Exit script
-exit 0
+  case $menu_choice in
+    "1")
+      update_and_upgrade
+      ;;
+    "2")
+      install_essential_packages
+      ;;
+    "3")
+      install_speedtest
+      ;;
+    "4")
+      create_swap_file
+      ;;
+    "5")
+      enable_bbr
+      ;;
+    "6")
+      enable_and_configure_cron
+      ;;
+    "7")
+      install_vpn_panel
+      ;;
+    "8")
+      obtain_ssl_certificates
+      ;;
+    "9")
+      setup_pi_hole
+      ;;
+    "10")
+      install_configure_warp_proxy
+      ;;
+    "11")
+      deploy_erlang_mtproto_proxy
+      ;;
+    "12")
+      setup_hysteria_ii
+      ;;
+    "13")
+      setup_tuic_v5
+      ;;
+    "14")
+      change_ssh_port
+      ;;
+    "15")
+      enable_ufw
+      ;;
+    "16")
+      reboot_system
+      ;;
+  esac
+done

@@ -1,26 +1,30 @@
 # FreeIRAN 🕊️
-🌟 A simple bash script for setting up Ubuntu Server
+🌟 A Simple Bash Script With TUI For Setting Up Ubuntu Server
+🏹 Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
 
 What does this script do? you can select to:
 1. Update & Upgrade Server 🧬
-2. Install essential packages 🎉
+2. Install Essential Packages 🎉
 3. Install Speedtest 🚀
 4. Create SWAP File 💾
 5. Enable BBR 🛸
-6. Automatically update and restart the server every night at 01:00 GMT+3:30 ⏳
-7. Install X-UI (Alireza/MHSanaei) 🦄
+6. Schedule Automatic Updates & Restarts at 01:00 GMT+3:30 ⏳
+7. Install Multiprotocol VPN Panels (Alireza/MHSanaei/reality-ezpz) 🦄
 8. Install Pi-Hole Adblocker 🛡️
 9. Install & set WARP Proxy ✨
 10. Install Erlang MTProto Proxy 💫
 11. Install Hysteria II 🌈
 12. Install TUIC v5 🔥
+13. Obtain SSL Certificates 🗺️
+14. Change SSH Port 🥅
+15. Enable UFW 🔒
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
 ## How to run ❓
 Run it only on a fresh install of Ubuntu 22.04.
 ```
-curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && ./FreeIRAN.sh
+curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && sudo apt update && sudo apt install -y dialog && ./FreeIRAN.sh
 ```
 ## 💠 After setup has completed, don't forget to:
 
@@ -49,7 +53,7 @@ pihole -g
 ```
 3. Modify Lighttpd
 
-⭕ If you have installed Pi-hole, then Lighttpd is listening on port 80 by default. If you haven't changed the Lighttpd port, it's necessary to stop it before obtaining SSL certificates. Below, you can find commands to start, stop, restart, and modify the configuration of Lighttpd.
+⭕ If you have installed Pi-hole/reality-ezpz, then Lighttpd/docker is listening on port 80 by default. If you haven't changed the Lighttpd port, it's necessary to stop it before obtaining SSL certificates. Below, you can find commands to start, stop, restart, and modify the configuration of Lighttpd.
 ```
 sudo nano /etc/lighttpd/lighttpd.conf
 ```
@@ -178,6 +182,7 @@ sudo /home/qbittorrent-nox/Downloads/simplefileserver 80
 https://github.com/pi-hole
 https://github.com/alireza0/x-ui
 https://github.com/MHSanaei/3x-ui
+https://github.com/aleskxyz/reality-ezpz
 https://github.com/deathline94/tuic-v5-installer
 https://github.com/deathline94/Hysteria-Installer
 https://github.com/sssvip/simple-file-server

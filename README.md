@@ -145,7 +145,7 @@ See HTTPS version at https://github.com/ErfanNamira/AriaFileServer
 cd /home/qbittorrent-nox/Downloads
 wget https://raw.githubusercontent.com/ErfanNamira/AriaFileServer/main/AriaFileServerHTTP.py
 sudo apt install python3-pip
-pip3 install flask
+pip3 install flask passlib
 python3 AriaFileServerHTTP.py
 ```
 ## Optional: Install simplefileserver 🪩

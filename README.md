@@ -22,9 +22,16 @@ What does this script do? you can select to:
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
-⚠️ درصورتی که پروکسی تلگرام، TUIC یا Hysteria را نصب می‌کنید، پس از پایان آن مرحله، کلیدهای Ctrl+C را بزنید، به بالای ترمینال اسکرول کنید و پروکسی/کانفیگ ایجاد شده را کپی و ذخیره کنید.
+⚠️ در هنگام راه‌اندازی، وقتی درخواست برای تنظیم پارامترها نمایش داده می‌شود، پارامترها را به صورت دستی وارد کنید.
 
 ⚠️ If you are installing MTProto proxy, TUIC, or Hysteria, after completing that step, press the Ctrl+C keys, scroll up in the terminal, and copy and save the created proxy/configuration.
+
+⚠️ درصورتی که پروکسی تلگرام، TUIC یا Hysteria را نصب می‌کنید، پس از پایان آن مرحله، کلیدهای Ctrl+C را بزنید، به بالای ترمینال اسکرول کنید و پروکسی/کانفیگ ایجاد شده را کپی و ذخیره کنید.
+
+
+⚠️ To view the SSL certificate's address that has been created, follow the same path.
+
+⚠️ برای مشاهده آدرس گواهی SSL ایجاد شده نیز همین مسیر را طی کنید.
 
 ## How to run ❓
 Run it only on a fresh install of Ubuntu 22.04.

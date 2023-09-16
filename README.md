@@ -27,7 +27,7 @@ Run it only on a fresh install of Ubuntu 22.04.
 ```
 curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && sudo apt update && sudo apt install -y dialog && ./FreeIRAN.sh
 ```
-## 🚪 Access Panels
+## Access Panels 🚪
 1. If you have installed Reality-EZPZ, you can access its TUI by running the following command:
 ```
 bash <(curl -sL https://bit.ly/realityez) -m
@@ -117,7 +117,7 @@ ls
 nano ab-cloud-init.yaml
 sudo netplan apply
 ```
-You need to add the following settings to the 'ab-cloud-init.yaml' file:
+You need to add the following lines to the 'ab-cloud-init.yaml' file:
 ```
 nameservers:
   addresses: [127.0.0.53]

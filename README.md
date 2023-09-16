@@ -79,6 +79,8 @@ pihole -g
 3. Modify Lighttpd
 
 ⭕ If you have installed Pi-hole/reality-ezpz, then Lighttpd/docker is listening on port 80 by default. If you haven't changed the Lighttpd port, it's necessary to stop it before obtaining SSL certificates. Below, you can find commands to start, stop, restart, and modify the configuration of Lighttpd.
+
+⭕ اگر شما Pi-hole یا reality-ezpz را نصب کرده‌اید، در این صورت Lighttpd/docker به صورت پیش‌فرض از پورت 80 استفاده می‌کند. اگر پورت Lighttpd را تغییر نداده‌اید، قبل از دریافت گواهی SSL، لازم است آن را متوقف کنید. در زیر، شما می‌توانید دستوراتی برای شروع، توقف، بازآغاز و تغییر پیکربندی Lighttpd پیدا کنید.
 ```
 sudo nano /etc/lighttpd/lighttpd.conf
 ```

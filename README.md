@@ -10,7 +10,7 @@ What does this script do? you can select to:
 4. Create SWAP File 💾
 5. Enable BBR 🛸
 6. Schedule Automatic Updates & Restarts at 01:00 GMT+3:30 ⏳
-7. Install Multiprotocol VPN Panels (Alireza/MHSanaei/reality-ezpz) 🦄
+7. Install Multiprotocol VPN Panels (Alireza/MHSanaei/Reality-EZPZ) 🦄
 8. Install Pi-Hole Adblocker 🛡️
 9. Install & set WARP Proxy ✨
 10. Install Erlang MTProto Proxy 💫
@@ -26,6 +26,19 @@ What does this script do? you can select to:
 Run it only on a fresh install of Ubuntu 22.04.
 ```
 curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && sudo apt update && sudo apt install -y dialog && ./FreeIRAN.sh
+```
+## 🚪 Access Panels
+1. If you have installed Reality-EZPZ, you can access its TUI by running the following command:
+```
+bash <(curl -sL https://bit.ly/realityez) -m
+```
+2. If you have installed X-UI Panels, you can access their command-line interface by using the following command:
+```
+x-ui
+```
+3. If you have installed Pi-hole, you can access its command-line interface by using the following command:
+```
+pihole
 ```
 ## 💠 After setup has completed, don't forget to:
 

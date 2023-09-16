@@ -89,7 +89,7 @@ sudo systemctl start lighttpd.service
 sudo systemctl stop lighttpd.service
 sudo systemctl restart lighttpd.service
 ```
-5. Obtain SSL Certificates 
+4. Obtain SSL Certificates 
 ```
 sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email yourmail@gmail.com -d sub.domain.com
 ```

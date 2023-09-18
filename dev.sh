@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FreeIRAN v.2.0.0
+# FreeIRAN v.2.1.0 Beta
 # Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
 # ErfanNamira
 # https://github.com/ErfanNamira/FreeIRAN
@@ -15,14 +15,20 @@ if [[ $EUID -ne 0 ]]; then
   fi
 fi
 
-# Function to update and upgrade the server
-update_and_upgrade() {
-  sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean && sudo apt clean
+# 1. Function to perform system updates and cleanup
+system_update() {
+  sudo apt update -y
+  sudo apt upgrade -y
+  sudo apt autoremove -y
+  sudo apt autoclean -y
+  sudo apt clean -y
+
+  dialog --msgbox "System updates and cleanup completed." 10 60
 }
 
-# Function to install essential packages
+# 2. Function to install essential packages
 install_essential_packages() {
-  packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "dialog" "net-tools")
+  packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "net-tools")
 
   package_installed() {
     dpkg -l | grep -q "^ii  $1"
@@ -35,20 +41,20 @@ install_essential_packages() {
   done
 }
 
-# Function to install Speedtest
+# 3. Function to install Speedtest
 install_speedtest() {
   dialog --title "Install Speedtest" --yesno "Do you want to install Speedtest?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
     curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
-    sudo apt-get install speedtest
-    dialog --msgbox "Speedtest installed successfully." 10 40
+    sudo apt-get -y install speedtest
+    dialog --msgbox "Speedtest has been installed successfully. You can now run it by entering 'speedtest' in the terminal." 10 40
   else
     dialog --msgbox "Skipping installation of Speedtest." 10 40
   fi
 }
 
-# Function to create a swap file
+# 4. Function to create a swap file
 create_swap_file() {
   if [ -f /swapfile ]; then
     dialog --title "Swap File" --msgbox "A swap file already exists. Skipping swap file creation." 10 60
@@ -73,7 +79,7 @@ create_swap_file() {
   fi
 }
 
-# Function to enable BBR
+# 5. Function to enable BBR
 enable_bbr() {
   echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
   echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
@@ -81,20 +87,61 @@ enable_bbr() {
   dialog --msgbox "BBR enabled successfully." 10 40
 }
 
-# Function to enable and configure Cron
-enable_and_configure_cron() {
-  echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
-  echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
+# 6. Function to enable Hybla
+enable_hybla() {
+  # Add lines to /etc/security/limits.conf
+  echo "* soft nofile 51200" | sudo tee -a /etc/security/limits.conf
+  echo "* hard nofile 51200" | sudo tee -a /etc/security/limits.conf
 
-  dialog --msgbox "Cron enabled and configured successfully." 10 40
+  # Run ulimit command
+  ulimit -n 51200
+
+  # Add lines to /etc/ufw/sysctl.conf
+  echo "fs.file-max = 51200" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.core.rmem_max = 67108864" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.core.wmem_max = 67108864" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.core.netdev_max_backlog = 250000" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.core.somaxconn = 4096" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_syncookies = 1" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_tw_reuse = 1" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_tw_recycle = 0" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_fin_timeout = 30" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_keepalive_time = 1200" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.ip_local_port_range = 10000 65000" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_max_syn_backlog = 8192" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_max_tw_buckets = 5000" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_fastopen = 3" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_mem = 25600 51200 102400" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_rmem = 4096 87380 67108864" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_wmem = 4096 65536 67108864" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_mtu_probing = 1" | sudo tee -a /etc/ufw/sysctl.conf
+  echo "net.ipv4.tcp_congestion_control = hybla" | sudo tee -a /etc/ufw/sysctl.conf
+
+  dialog --msgbox "Hybla enabled successfully." 10 60
 }
 
-# Function to install Multiprotocol VPN Panel
+# 7. Function to enable and configure Cron
+enable_and_configure_cron() {
+  dialog --title "Enable and Configure Cron" --yesno "Would you like to enable and configure Cron? This will schedule automatic updates and system restarts every night at 01:00 +3:30 GMT." 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
+    echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
+    dialog --msgbox "Cron enabled and configured successfully." 10 40
+  else
+    dialog --msgbox "Cron configuration skipped." 10 40
+  fi
+}
+
+# 8. Function to install Multiprotocol VPN Panel
 install_vpn_panel() {
-  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 3 \
+  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 6 \
     "1" "X-UI | Alireza" \
     "2" "X-UI | MHSanaei" \
-    "3" "reality-ezpz | aleskxyz" 2> vpn_choice.txt
+    "3" "X-UI | vaxilu" \
+    "4" "X-UI | FranzKafkaYu" \
+    "5" "X-UI En | FranzKafkaYu" \
+    "6" "reality-ezpz | aleskxyz" 2> vpn_choice.txt
 
   vpn_choice=$(cat vpn_choice.txt)
 
@@ -106,6 +153,15 @@ install_vpn_panel() {
       bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
       ;;
     "3")
+      bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+      ;;
+    "4")
+      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
+      ;;
+    "5")
+      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install_en.sh)
+      ;;
+    "6")
       bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
       ;;
     *)
@@ -115,12 +171,12 @@ install_vpn_panel() {
   esac
 
   # Wait for the user to press Enter
-  read -p "Please Press Enter to continue."
+  read -p "Please press Enter to continue."
 
   # Return to the menu
 }
 
-# Function to obtain SSL certificates
+# 9. Function to obtain SSL certificates
 obtain_ssl_certificates() {
   apt install -y certbot
   dialog --title "Obtain SSL Certificates" --yesno "Do you want to Get SSL Certificates?" 10 60
@@ -278,7 +334,7 @@ while true; do
     "3" "Install Speedtest" \
     "4" "Create SWAP File (if needed)" \
     "5" "Enable BBR" \
-    "6" "Schedule Automatic Updates" \
+    "6" "Schedule Automatic Updates & ReStarts" \
     "7" "Install Multiprotocol VPN Panel" \
     "8" "Obtain SSL Certificates" \
     "9" "Set Up Pi-Hole" \
@@ -312,6 +368,8 @@ while true; do
       ;;
     "5")
       enable_bbr
+    "6")
+      enable_hybla
       ;;
     "6")
       enable_and_configure_cron

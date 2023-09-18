@@ -217,31 +217,34 @@ obtain_ssl_certificates() {
 
 # 10. Function to set up Pi-Hole
 setup_pi_hole() {
-# Ask if you want to install Pi-Hole, a network-wide ad blocker
+  # Ask if you want to install Pi-Hole, a network-wide ad blocker
   dialog --title "Install Pi-Hole" --yesno "Do you want to install Pi-Hole, the network-wide ad blocker?" 10 60
   response=$?
 
   if [ $response -eq 0 ]; then
-  curl -sSL https://install.pi-hole.net | bash
+    curl -sSL https://install.pi-hole.net | bash
 
-  dialog --title "Change Pi-Hole Web Interface Password" --yesno "Do you want to change the Pi-Hole web interface password?" 10 60
-  response=$?
-  if [ $response -eq 0 ]; then
-    pihole -a -p
-    dialog --msgbox "Pi-Hole web interface password changed successfully." 10 60
-  else
-    dialog --msgbox "Skipping Pi-Hole web interface password change." 10 40
-  fi
-
-  if [ -f /etc/lighttpd/lighttpd.conf ]; then
-    dialog --title "Change Lighttpd Port" --yesno "If you have installed Pi-Hole, then Lighttpd is listening on port 80 by default. Do you want to change the Lighttpd port?" 10 60
+    dialog --title "Change Pi-Hole Web Interface Password" --yesno "Do you want to change the Pi-Hole web interface password?" 10 60
     response=$?
     if [ $response -eq 0 ]; then
-      sudo nano /etc/lighttpd/lighttpd.conf
-      dialog --msgbox "Lighttpd port changed." 10 60
+      pihole -a -p
+      dialog --msgbox "Pi-Hole web interface password changed successfully." 10 60
     else
-      dialog --msgbox "Skipping Lighttpd port change." 10 40
+      dialog --msgbox "Skipping Pi-Hole web interface password change." 10 40
     fi
+
+    if [ -f /etc/lighttpd/lighttpd.conf ]; then
+      dialog --title "Change Lighttpd Port" --yesno "If you have installed Pi-Hole, then Lighttpd is listening on port 80 by default. Do you want to change the Lighttpd port?" 10 60
+      response=$?
+      if [ $response -eq 0 ]; then
+        sudo nano /etc/lighttpd/lighttpd.conf
+        dialog --msgbox "Lighttpd port changed." 10 60
+      else
+        dialog --msgbox "Skipping Lighttpd port change." 10 40
+      fi
+    fi
+  else
+    dialog --msgbox "Skipping Pi-Hole installation." 10 40
   fi
 }
 

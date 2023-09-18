@@ -243,8 +243,6 @@ setup_pi_hole() {
       dialog --msgbox "Skipping Lighttpd port change." 10 40
     fi
   fi
-
-  # Return to the menu
 }
 
 # 11. Function to change SSH port

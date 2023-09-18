@@ -142,7 +142,7 @@ obtain_ssl_certificates() {
   fi
 
   # Wait for the user to press Enter
-  read -p "Press Enter to continue..."
+  read -p "Press Enter to continue"
 
   # Return to the menu
 }

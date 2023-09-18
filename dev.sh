@@ -217,6 +217,11 @@ obtain_ssl_certificates() {
 
 # 10. Function to set up Pi-Hole
 setup_pi_hole() {
+# Ask if you want to install Pi-Hole, a network-wide ad blocker
+  dialog --title "Install Pi-Hole" --yesno "Do you want to install Pi-Hole, the network-wide ad blocker?" 10 60
+  response=$?
+
+  if [ $response -eq 0 ]; then
   curl -sSL https://install.pi-hole.net | bash
 
   dialog --title "Change Pi-Hole Web Interface Password" --yesno "Do you want to change the Pi-Hole web interface password?" 10 60

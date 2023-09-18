@@ -244,9 +244,6 @@ setup_pi_hole() {
     fi
   fi
 
-  # Wait for the user to press Enter
-  read -p "Please Press Enter to continue"
-
   # Return to the menu
 }
 

@@ -408,86 +408,51 @@ exit_script() {
   exit 0  # Exit with a status code of 0 (indicating successful termination)
 }
 
-# Main menu
+# Main menu options using dialog
 while true; do
-  menu_choice=$(dialog --clear \
-    --backtitle "[FreeIRAN]" \
-    --title "FreeIRAN - Server Setup Script" \
-    --menu "Select an option:" 15 60 16 \
-    "1" "Update & Upgrade Server" \
-    "2" "Install Essential Packages" \
-    "3" "Install Speedtest" \
-    "4" "Create SWAP File (if needed)" \
-    "5" "Enable BBR" \
-    "6" "Schedule Automatic Updates & ReStarts" \
-    "7" "Install Multiprotocol VPN Panel" \
-    "8" "Obtain SSL Certificates" \
-    "9" "Set Up Pi-Hole" \
-    "10" "Install & Configure WARP Proxy" \
-    "11" "Deploy Erlang MTProto Proxy" \
-    "12" "Setup Hysteria II" \
-    "13" "Setup TUIC v5" \
-    "14" "Change SSH Port" \
-    "15" "Enable UFW (Uncomplicated Firewall)" \
-    "16" "Reboot System" \
-    3>&1 1>&2 2>&3)
-  
-  exit_status=$?
-  if [ $exit_status -ne 0 ]; then
-    clear
-    exit 0
-  fi
+  choice=$(dialog --clear --backtitle "FreeIRAN v.2.1.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
+    1 "System Update and Cleanup" \
+    2 "Install Essential Packages" \
+    3 "Install Speedtest" \
+    4 "Create Swap File" \
+    5 "Enable BBR" \
+    6 "Enable Hybla" \
+    7 "Schedule Automatic Updates & ReStarts" \
+    8 "Install Multiprotocol VPN Panels" \
+    9 "Obtain SSL Certificates" \
+    10 "Setup Pi-Hole" \
+    11 "Change SSH Port" \
+    12 "Enable UFW" \
+    13 "Install & Configure WARP Proxy" \
+    14 "Deploy Erlang MTProto Proxy" \
+    15 "Setup Hysteria II" \
+    16 "Setup TUIC v5" \
+    17 "Setup Reverse Tls Tunnel" \
+    18 "Create SSH User" \
+    19 "Reboot System" \
+    20 "Exit Script" 3>&1 1>&2 2>&3)
 
-  case $menu_choice in
-    "1")
-      update_and_upgrade
-      ;;
-    "2")
-      install_essential_packages
-      ;;
-    "3")
-      install_speedtest
-      ;;
-    "4")
-      create_swap_file
-      ;;
-    "5")
-      enable_bbr
-    "6")
-      enable_hybla
-      ;;
-    "6")
-      enable_and_configure_cron
-      ;;
-    "7")
-      install_vpn_panel
-      ;;
-    "8")
-      obtain_ssl_certificates
-      ;;
-    "9")
-      setup_pi_hole
-      ;;
-    "10")
-      install_configure_warp_proxy
-      ;;
-    "11")
-      deploy_erlang_mtproto_proxy
-      ;;
-    "12")
-      setup_hysteria_ii
-      ;;
-    "13")
-      setup_tuic_v5
-      ;;
-    "14")
-      change_ssh_port
-      ;;
-    "15")
-      enable_ufw
-      ;;
-    "16")
-      reboot_system
-      ;;
+  case $choice in
+    1) system_update ;;
+    2) install_essential_packages ;;
+    3) install_speedtest ;;
+    4) create_swap_file ;;
+    5) enable_bbr ;;
+    6) enable_hybla ;;
+    7) enable_and_configure_cron ;;
+    8) install_vpn_panel ;;
+    9) obtain_ssl_certificates ;;
+    10) setup_pi_hole ;;
+    11) change_ssh_port ;;
+    12) enable_ufw ;;
+    13) install_configure_warp_proxy ;;
+    14) deploy_erlang_mtproto_proxy ;;
+    15) setup_hysteria_ii ;;
+    16) setup_tuic_v5 ;;
+    17) setup_reverse_tls_tunnel ;;
+    18) create_ssh_user ;;
+    19) reboot_system ;;
+    20) exit_script ;;
+    *) echo "Invalid option. Please try again." ;;
   esac
 done

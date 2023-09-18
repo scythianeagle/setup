@@ -122,6 +122,7 @@ install_vpn_panel() {
 
 # Function to obtain SSL certificates
 obtain_ssl_certificates() {
+  apt install certbot
   dialog --title "Obtain SSL Certificates" --yesno "Do you want to Get SSL Certificates?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
@@ -133,6 +134,9 @@ obtain_ssl_certificates() {
     if [ -n "$email" ] && [ -n "$domain" ]; then
       sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email "$email" -d "$domain"
 
+      # Wait for the user to press Enter
+      read -p "Press Enter to continue"
+
       dialog --msgbox "SSL certificates obtained successfully for $domain in /etc/letsencrypt/live." 10 60
     else
       dialog --msgbox "Both email and domain are required to obtain SSL certificates." 10 60
@@ -140,9 +144,6 @@ obtain_ssl_certificates() {
   else
     dialog --msgbox "Skipping SSL certificate acquisition." 10 40
   fi
-
-  # Wait for the user to press Enter
-  read -p "Press Enter to continue"
 
   # Return to the menu
 }

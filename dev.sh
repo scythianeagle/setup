@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FreeIRAN v.2.0.0 Beta
+# FreeIRAN v.2.0.0
 # Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
 # ErfanNamira
 # https://github.com/ErfanNamira/FreeIRAN
@@ -61,10 +61,10 @@ create_swap_file() {
       sudo chmod 600 /swapfile
       sudo mkswap /swapfile
       sudo swapon /swapfile
-	  echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+	    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
       sudo sysctl vm.swappiness=10
       sudo sysctl vm.vfs_cache_pressure=50
-	  echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
+	    echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
       echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
       dialog --msgbox "Swap file created successfully with a size of $swap_size." 10 60
     else
@@ -110,13 +110,19 @@ install_vpn_panel() {
       ;;
     *)
       dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
+      return
       ;;
   esac
+
+  # Wait for the user to press Enter
+  read -p "Please Press Enter to continue."
+
+  # Return to the menu
 }
 
 # Function to obtain SSL certificates
 obtain_ssl_certificates() {
-  dialog --title "Obtain SSL Certificates" --yesno "Do you want to obtain SSL certificates?" 10 60
+  dialog --title "Obtain SSL Certificates" --yesno "Do you want to Get SSL Certificates?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
     dialog --title "SSL Certificate Information" --inputbox "Enter your email:" 10 60 2> email.txt
@@ -134,6 +140,11 @@ obtain_ssl_certificates() {
   else
     dialog --msgbox "Skipping SSL certificate acquisition." 10 40
   fi
+
+  # Wait for the user to press Enter
+  read -p "Press Enter to continue..."
+
+  # Return to the menu
 }
 
 # Function to set up Pi-Hole

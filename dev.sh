@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FreeIRAN v.2.1.0 Beta
+# FreeIRAN v.1.2.0 Beta
 # Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
 # ErfanNamira
 # https://github.com/ErfanNamira/FreeIRAN
@@ -410,7 +410,7 @@ exit_script() {
 
 # Main menu options using dialog
 while true; do
-  choice=$(dialog --clear --backtitle "FreeIRAN v.2.1.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
+  choice=$(dialog --clear --backtitle "FreeIRAN v.1.2.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
     1 "System Update and Cleanup" \
     2 "Install Essential Packages" \
     3 "Install Speedtest" \

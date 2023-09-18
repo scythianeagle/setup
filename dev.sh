@@ -344,7 +344,53 @@ setup_tuic_v5() {
   read -p "Please Press Enter to continue"
 }
 
-# Function to reboot the system
+# 17. Function to setup Reverse Tls Tunnel
+setup_reverse_tls_tunnel() {
+  # Ask the user if they want to install Reverse Tls Tunnel
+  dialog --title "Setup Reverse Tls Tunnel" --yesno "Do you want to install Reverse Tls Tunnel developed by radkesvat?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    # Download the script and make it executable
+    wget "https://raw.githubusercontent.com/radkesvat/ReverseTlsTunnel/master/install.sh" -O install.sh && chmod +x install.sh && bash install.sh
+
+    # Display instructions in the terminal
+    echo "ReverseTlsTunnel has been downloaded. Please run it in an Iran server with this command:"
+    echo "nohup ./RTT --iran --lport:443 --sni:splus.ir --password:123"
+    echo
+    echo "And run it in an Abroad server with:"
+    echo "nohup ./RTT --kharej --iran-ip:5.4.3.2 --iran-port:443 --toip:127.0.0.1 --toport:2083 --password:123 --sni:splus.ir"
+
+    # Wait for the user to press Enter
+    read -p "Please Press Enter to continue"
+  else
+    dialog --msgbox "Skipping installation of Reverse Tls Tunnel." 10 60
+  fi
+}
+
+# 18.Function to create a non-root SSH user
+create_ssh_user() {
+  # Ask the user for the username
+  read -p "Enter the username for the new SSH user: " username
+
+  # Ask the user for the password (securely)
+  read -s -p "Enter the password for the new SSH user: " password
+  echo
+
+  # Create the user with the specified username
+  sudo useradd -m -s /bin/bash "$username"
+
+  # Set the user's password
+  echo "$username:$password" | sudo chpasswd
+
+  # Display a message with the created user details
+  echo "SSH user: $username"
+  echo "Password: $password"
+
+  # Wait for the user to press Enter
+  read -p "Please Press Enter to continue"
+}
+
+# 19.Function to reboot the system
 reboot_system() {
   dialog --title "Reboot System" --yesno "Do you want to reboot the system?" 10 60
   response=$?
@@ -353,6 +399,13 @@ reboot_system() {
   else
     dialog --msgbox "System reboot canceled." 10 40
   fi
+}
+
+# 20.Function to exit the script
+exit_script() {
+  clear  # Clear the terminal screen for a clean exit
+  echo "Exiting the script. Goodbye!"
+  exit 0  # Exit with a status code of 0 (indicating successful termination)
 }
 
 # Main menu

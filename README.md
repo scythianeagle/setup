@@ -4,37 +4,30 @@
 🏹 Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
 
 What does this script do? you can select to:
-1. Update & Upgrade Server 🧬
+1. Update & Cleanup Server 🧬
 2. Install Essential Packages 🎉
 3. Install Speedtest 🚀
 4. Create SWAP File 💾
 5. Enable BBR 🛸
-6. Schedule Automatic Updates & Restarts at 01:00 GMT+3:30 ⏳
-7. Install Multiprotocol VPN Panels (Alireza/MHSanaei/Reality-EZPZ) 🦄
-8. Install Pi-Hole Adblocker 🛡️
-9. Install & set WARP Proxy ✨
-10. Install Erlang MTProto Proxy 💫
-11. Install Hysteria II 🌈
-12. Install TUIC v5 🔥
-13. Obtain SSL Certificates 🗺️
-14. Change SSH Port 🥅
-15. Enable UFW 🔒
+6. Enable Hybla 🌐
+7. Schedule Automatic Updates & Restarts at 01:00 GMT+3:30 ⏳
+8. Install Multiprotocol VPN Panels (Alireza/MHSanaei/Reality-EZPZ/vaxilu/FranzKafkaYu) 🦄
+9. Obtain SSL Certificates 🗺️
+10. Install Pi-Hole network-wide Adblocker 🛡️
+11. Change SSH Port 🥅
+12. Enable UFW 🔒
+13. Install & Configure WARP Proxy ✨
+14. Install Erlang MTProto Proxy 💫
+15. Setup Hysteria II 🌈
+16. Setup TUIC v5 🔥
+17. Setup Reverse Tls Tunnel 🔄
+18. Create non-root SSH User 👤
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
 ⚠️ در هنگام راه‌اندازی، وقتی درخواست برای تنظیم پارامترها نمایش داده می‌شود، پارامترها را به صورت دستی وارد کنید.
-
-⚠️ If you are installing MTProto proxy, TUIC, or Hysteria, after completing that step, press the Ctrl+C keys, scroll up in the terminal, and copy and save the created proxy/configuration.
-
-⚠️ درصورتی که پروکسی تلگرام، TUIC یا Hysteria را نصب می‌کنید، پس از پایان آن مرحله، کلیدهای Ctrl+C را بزنید، به بالای ترمینال اسکرول کنید و پروکسی/کانفیگ ایجاد شده را کپی و ذخیره کنید.
-
-
-⚠️ To view the SSL certificate's address that has been created, follow the same path.
-
-⚠️ برای مشاهده آدرس گواهی SSL ایجاد شده نیز همین مسیر را طی کنید.
-
-## How to run ❓
-Run it only on a fresh install of Ubuntu 22.04.
+## How to run 📦
+It's highly recommended to run this script only on a fresh install of Ubuntu 22.04.
 ```
 curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && sudo apt update && sudo apt install -y dialog && ./FreeIRAN.sh
 ```
@@ -207,15 +200,18 @@ sudo /home/qbittorrent-nox/Downloads/simplefileserver 80
 ## Used Projects 💞
 ```
 https://github.com/pi-hole
+https://github.com/vaxilu/x-ui
 https://github.com/alireza0/x-ui
 https://github.com/MHSanaei/3x-ui
+https://github.com/FranzKafkaYu/x-ui
 https://github.com/aleskxyz/reality-ezpz
+https://github.com/radkesvat/ReverseTlsTunnel
 https://github.com/deathline94/tuic-v5-installer
 https://github.com/deathline94/Hysteria-Installer
 https://github.com/sssvip/simple-file-server
+https://github.com/blocklistproject/Lists
 https://github.com/seriyps/mtproto_proxy
 https://github.com/P3TERX/warp.sh
-https://github.com/blocklistproject/Lists
 ```
 ## Buy Me a Coffee ☕❤️
 ```

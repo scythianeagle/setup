@@ -28,7 +28,7 @@ system_update() {
 
 # 2. Function to install essential packages
 install_essential_packages() {
-  packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "net-tools")
+  packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "net-tools" "zip" "unzip")
 
   package_installed() {
     dpkg -l | grep -q "^ii  $1"
@@ -81,43 +81,54 @@ create_swap_file() {
 
 # 5. Function to enable BBR
 enable_bbr() {
-  echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
-  echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
-
-  dialog --msgbox "BBR enabled successfully." 10 40
+  dialog --title "Enable BBR" --yesno "Do you want to enable BBR? Enabling BBR while Hybla is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
+    echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
+    dialog --msgbox "BBR enabled successfully." 10 40
+  else
+    dialog --msgbox "BBR configuration skipped." 10 40
+  fi
 }
 
 # 6. Function to enable Hybla
 enable_hybla() {
-  # Add lines to /etc/security/limits.conf
-  echo "* soft nofile 51200" | sudo tee -a /etc/security/limits.conf
-  echo "* hard nofile 51200" | sudo tee -a /etc/security/limits.conf
+  dialog --title "Enable Hybla" --yesno "Do you want to enable Hybla? Enabling Hybla while BBR is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    # Add lines to /etc/security/limits.conf
+    echo "* soft nofile 51200" | sudo tee -a /etc/security/limits.conf
+    echo "* hard nofile 51200" | sudo tee -a /etc/security/limits.conf
 
-  # Run ulimit command
-  ulimit -n 51200
+    # Run ulimit command
+    ulimit -n 51200
 
-  # Add lines to /etc/ufw/sysctl.conf
-  echo "fs.file-max = 51200" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.core.rmem_max = 67108864" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.core.wmem_max = 67108864" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.core.netdev_max_backlog = 250000" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.core.somaxconn = 4096" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_syncookies = 1" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_tw_reuse = 1" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_tw_recycle = 0" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_fin_timeout = 30" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_keepalive_time = 1200" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.ip_local_port_range = 10000 65000" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_max_syn_backlog = 8192" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_max_tw_buckets = 5000" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_fastopen = 3" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_mem = 25600 51200 102400" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_rmem = 4096 87380 67108864" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_wmem = 4096 65536 67108864" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_mtu_probing = 1" | sudo tee -a /etc/ufw/sysctl.conf
-  echo "net.ipv4.tcp_congestion_control = hybla" | sudo tee -a /etc/ufw/sysctl.conf
+    # Add lines to /etc/ufw/sysctl.conf
+    echo "fs.file-max = 51200" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.core.rmem_max = 67108864" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.core.wmem_max = 67108864" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.core.netdev_max_backlog = 250000" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.core.somaxconn = 4096" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_syncookies = 1" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_tw_reuse = 1" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_tw_recycle = 0" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_fin_timeout = 30" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_keepalive_time = 1200" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.ip_local_port_range = 10000 65000" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_max_syn_backlog = 8192" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_max_tw_buckets = 5000" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_fastopen = 3" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_mem = 25600 51200 102400" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_rmem = 4096 87380 67108864" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_wmem = 4096 65536 67108864" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_mtu_probing = 1" | sudo tee -a /etc/ufw/sysctl.conf
+    echo "net.ipv4.tcp_congestion_control = hybla" | sudo tee -a /etc/ufw/sysctl.conf
 
-  dialog --msgbox "Hybla enabled successfully." 10 60
+    dialog --msgbox "Hybla enabled successfully." 10 60
+  else
+    dialog --msgbox "Hybla configuration skipped." 10 60
+  fi
 }
 
 # 7. Function to enable and configure Cron
@@ -191,7 +202,7 @@ obtain_ssl_certificates() {
       sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email "$email" -d "$domain"
 
       # Wait for the user to press Enter
-      read -p "Press Enter to continue"
+      read -p "Please Press Enter to continue"
 
       dialog --msgbox "SSL certificates obtained successfully for $domain in /etc/letsencrypt/live." 10 60
     else
@@ -204,7 +215,7 @@ obtain_ssl_certificates() {
   # Return to the menu
 }
 
-# Function to set up Pi-Hole
+# 10. Function to set up Pi-Hole
 setup_pi_hole() {
   curl -sSL https://install.pi-hole.net | bash
 
@@ -227,9 +238,14 @@ setup_pi_hole() {
       dialog --msgbox "Skipping Lighttpd port change." 10 40
     fi
   fi
+
+  # Wait for the user to press Enter
+  read -p "Please Press Enter to continue"
+
+  # Return to the menu
 }
 
-# Function to change SSH port
+# 11. Function to change SSH port
 change_ssh_port() {
   # Prompt the user for the new SSH port
   dialog --title "Change SSH Port" --inputbox "Enter the new SSH port:" 10 60 2> ssh_port.txt
@@ -246,13 +262,13 @@ change_ssh_port() {
     # Reload SSH service to apply changes
     sudo systemctl reload sshd
 
-    dialog --msgbox "SSH port changed to $new_ssh_port. Please make sure to update your SSH client configuration." 10 60
+    dialog --msgbox "SSH port changed to $new_ssh_port. Please ensure that you apply related firewall rules and update your SSH client configuration accordingly." 10 60
   else
     dialog --msgbox "Invalid port number. Please provide a valid port." 10 60
   fi
 }
 
-# Function to enable UFW
+# 12. Function to enable UFW
 enable_ufw() {
   # Set defaults
   sudo ufw default deny incoming
@@ -283,33 +299,49 @@ enable_ufw() {
   # Enable UFW to start at boot
   sudo ufw enable
   sudo systemctl enable ufw
+
+  # Display completion message
+  dialog --msgbox "UFW enabled and configured successfully." 12 60
 }
 
-# Function to install and configure WARP Proxy
+# 13. Function to install and configure WARP Proxy
 install_configure_warp_proxy() {
   dialog --title "Install & Configure WARP Proxy" --yesno "Do you want to install and configure WARP Proxy?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
     bash <(curl -fsSL git.io/warp.sh) proxy
+    
+    # Wait for the user to press Enter
+    read -p "Please Press Enter to continue"
+    
     dialog --msgbox "WARP Proxy installed and configured successfully." 10 60
   else
     dialog --msgbox "Skipping installation and configuration of WARP Proxy." 10 60
   fi
 }
 
-# Function to deploy Erlang MTProto Proxy
+# 14. Function to deploy Erlang MTProto Proxy
 deploy_erlang_mtproto_proxy() {
   curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
+  
+  # Wait for the user to press Enter
+  read -p "Please Press Enter to continue"
 }
 
-# Function to setup Hysteria II
+# 15. Function to setup Hysteria II
 setup_hysteria_ii() {
   bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
+
+  # Wait for the user to press Enter
+  read -p "Please Press Enter to continue"
 }
 
-# Function to setup TUIC v5
+# 16. Function to setup TUIC v5
 setup_tuic_v5() {
   bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)
+
+  # Wait for the user to press Enter
+  read -p "Please Press Enter to continue"
 }
 
 # Function to reboot the system

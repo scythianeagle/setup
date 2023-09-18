@@ -122,7 +122,7 @@ install_vpn_panel() {
 
 # Function to obtain SSL certificates
 obtain_ssl_certificates() {
-  apt install certbot
+  apt install -y certbot
   dialog --title "Obtain SSL Certificates" --yesno "Do you want to Get SSL Certificates?" 10 60
   response=$?
   if [ $response -eq 0 ]; then

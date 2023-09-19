@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FreeIRAN v.1.2.0
+# FreeIRAN v.1.2.1
 # Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
 # ErfanNamira
 # https://github.com/ErfanNamira/FreeIRAN
@@ -347,7 +347,24 @@ setup_tuic_v5() {
   read -p "Please Press Enter to continue"
 }
 
-# 17. Function to setup Reverse Tls Tunnel
+# 17. Function to setup Juicity
+setup_juicity() {
+  dialog --title "Setup Juicity" --yesno "Do you want to setup Juicity?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Juicity-Installer/main/juicity-installer.sh)
+    dialog --msgbox "Juicity setup completed." 10 60
+  else
+    dialog --msgbox "Skipping Juicity setup." 10 40
+  fi
+
+  # Wait for the user to press Enter
+  read -p "Please press Enter to continue."
+
+  # Return to the menu
+}
+
+# 18. Function to setup Reverse Tls Tunnel
 setup_reverse_tls_tunnel() {
   # Ask the user if they want to install Reverse Tls Tunnel
   dialog --title "Setup Reverse Tls Tunnel" --yesno "Do you want to install Reverse Tls Tunnel developed by radkesvat?" 10 60
@@ -370,7 +387,7 @@ setup_reverse_tls_tunnel() {
   fi
 }
 
-# 18.Function to create a non-root SSH user
+# 19.Function to create a non-root SSH user
 create_ssh_user() {
   # Ask the user for the username
   read -p "Enter the username for the new SSH user: " username
@@ -393,7 +410,7 @@ create_ssh_user() {
   read -p "Please Press Enter to continue"
 }
 
-# 19.Function to reboot the system
+# 20.Function to reboot the system
 reboot_system() {
   dialog --title "Reboot System" --yesno "Do you want to reboot the system?" 10 60
   response=$?
@@ -404,7 +421,7 @@ reboot_system() {
   fi
 }
 
-# 20.Function to exit the script
+# 21.Function to exit the script
 exit_script() {
   clear  # Clear the terminal screen for a clean exit
   echo "Exiting the script. Goodbye!"
@@ -430,10 +447,11 @@ while true; do
     14 "Deploy Erlang MTProto Proxy" \
     15 "Setup Hysteria II" \
     16 "Setup TUIC v5" \
-    17 "Setup Reverse Tls Tunnel" \
-    18 "Create SSH User" \
-    19 "Reboot System" \
-    20 "Exit Script" 3>&1 1>&2 2>&3)
+    17 "Setup Juicity" \
+    18 "Setup Reverse Tls Tunnel" \
+    19 "Create SSH User" \
+    20 "Reboot System" \
+    21 "Exit Script" 3>&1 1>&2 2>&3)
 
   case $choice in
     1) system_update ;;
@@ -452,10 +470,11 @@ while true; do
     14) deploy_erlang_mtproto_proxy ;;
     15) setup_hysteria_ii ;;
     16) setup_tuic_v5 ;;
-    17) setup_reverse_tls_tunnel ;;
-    18) create_ssh_user ;;
-    19) reboot_system ;;
-    20) exit_script ;;
+    17) setup_juicity ;;
+    18) setup_reverse_tls_tunnel ;;
+    19) create_ssh_user ;;
+    20) reboot_system ;;
+    21) exit_script ;;
     *) echo "Invalid option. Please try again." ;;
   esac
 done

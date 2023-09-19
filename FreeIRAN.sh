@@ -353,13 +353,10 @@ setup_juicity() {
   response=$?
   if [ $response -eq 0 ]; then
     bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Juicity-Installer/main/juicity-installer.sh)
-    dialog --msgbox "Juicity setup completed." 10 60
+    read -p "Juicity setup completed. Please Press Enter to continue."
   else
     dialog --msgbox "Skipping Juicity setup." 10 40
   fi
-
-  # Wait for the user to press Enter
-  read -p "Please press Enter to continue."
 
   # Return to the menu
 }

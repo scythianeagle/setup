@@ -20,8 +20,9 @@ What does this script do? you can select to:
 14. Install Erlang MTProto Proxy 💫
 15. Setup Hysteria II 🌈
 16. Setup TUIC v5 🔥
-17. Setup Reverse Tls Tunnel 🔄
-18. Create non-root SSH User 👤
+17. Setup Juicity 🍹
+18. Setup Reverse Tls Tunnel 🔄
+19. Create non-root SSH User 👤
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
@@ -206,6 +207,7 @@ https://github.com/MHSanaei/3x-ui
 https://github.com/FranzKafkaYu/x-ui
 https://github.com/aleskxyz/reality-ezpz
 https://github.com/radkesvat/ReverseTlsTunnel
+https://github.com/deathline94/Juicity-Installer
 https://github.com/deathline94/tuic-v5-installer
 https://github.com/deathline94/Hysteria-Installer
 https://github.com/sssvip/simple-file-server

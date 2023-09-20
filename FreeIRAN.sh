@@ -445,7 +445,7 @@ while true; do
     15 "Setup Hysteria II" \
     16 "Setup TUIC v5" \
     17 "Setup Juicity" \
-    18 "Setup Reverse Tls Tunnel" \
+    18 "Setup Reverse TLS Tunnel" \
     19 "Create SSH User" \
     20 "Reboot System" \
     21 "Exit Script" 3>&1 1>&2 2>&3)

@@ -218,62 +218,55 @@ enable_and_configure_cron() {
 
 # Function to Install Multiprotocol VPN Panels
 install_vpn_panel() {
-  # Ask the user if they want to install VPN panels
-  dialog --title "Install Multiprotocol VPN Panels" --yesno "Would you like to install Multiprotocol VPN Panels?" 10 60
-  response=$?
-  if [ $response -eq 0 ]; then
-    choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install:" 15 60 8 \
-      "1" "X-UI | Alireza" \
-      "2" "X-UI | MHSanaei" \
-      "3" "X-UI | vaxilu" \
-      "4" "X-UI | FranzKafkaYu" \
-      "5" "X-UI En | FranzKafkaYu" \
-      "6" "reality-ezpz | aleskxyz" \
-      "7" "Hiddify" \
-      "8" "Marzban | Gozargah" 2> vpn_choice.txt)
+  choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install:" 15 60 8 \
+    "1" "X-UI | Alireza" \
+    "2" "X-UI | MHSanaei" \
+    "3" "X-UI | vaxilu" \
+    "4" "X-UI | FranzKafkaYu" \
+    "5" "X-UI En | FranzKafkaYu" \
+    "6" "reality-ezpz | aleskxyz" \
+    "7" "Hiddify" \
+    "8" "Marzban | Gozargah" 2> vpn_choice.txt)
 
-    vpn_choice=$(cat vpn_choice.txt)
+  vpn_choice=$(cat vpn_choice.txt)
 
-    case $vpn_choice in
-      "1")
-        bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
-        ;;
-      "2")
-        bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
-        ;;
-      "3")
-        bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
-        ;;
-      "4")
-        bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
-        ;;
-      "5")
-        bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install_en.sh)
-        ;;
-      "6")
-        bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
-        ;;
-      "7")
-        # Installation code for Hiddify
-        sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
-        ;;
-      "8")
-        # Installation code for Marzban | Gozargah
-        sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
-        # Create a sudo admin for Marzban dashboard
-        marzban cli admin create --sudo
-        ;;
-      *)
-        dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
-        return
-        ;;
-    esac
+  case $vpn_choice in
+    "1")
+      bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
+      ;;
+    "2")
+      bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+      ;;
+    "3")
+      bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+      ;;
+    "4")
+      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
+      ;;
+    "5")
+      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install_en.sh)
+      ;;
+    "6")
+      bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
+      ;;
+    "7")
+      # Installation code for Hiddify
+      sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+      ;;
+    "8")
+      # Installation code for Marzban | Gozargah
+      sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
+      # Create a sudo admin for Marzban dashboard
+      marzban cli admin create --sudo
+      ;;
+    *)
+      dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
+      return
+      ;;
+  esac
 
-    # Wait for user to press Enter
-    read -p "Please Press Enter to continue."
-  else
-    dialog --msgbox "VPN panel installation skipped." 10 40
-  fi
+  # Prompt the user to press Enter before returning to the main menu
+  read -p "Please Press Enter to continue."
 }
 
 # 9. Function to obtain SSL certificates

@@ -21,8 +21,11 @@ What does this script do? you can select to:
 15. Setup Hysteria II 🌈
 16. Setup TUIC v5 🔥
 17. Setup Juicity 🍹
-18. Setup Reverse TLS Tunnel 🔄
-19. Create non-root SSH User 👤
+18. Setup WireGuard ♟️
+19. Setup OpenVPN 🎗️
+20. Setup IKEv2/IPsec 🧭
+21. Setup Reverse TLS Tunnel 🔄
+22. Create non-root SSH User 👤
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 

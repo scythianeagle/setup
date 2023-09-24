@@ -255,11 +255,11 @@ install_vpn_panel() {
         ;;
       "7")
         # Installation code for Hiddify
-        sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+        bash <(curl -Lo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)
         ;;
       "8")
         # Installation code for Marzban | Gozargah
-        sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
+        bash <(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)
         # Create a sudo admin for Marzban dashboard
         marzban cli admin create --sudo
         ;;
@@ -390,7 +390,6 @@ change_ssh_port() {
 # 12. Function to enable UFW
 enable_ufw() {
   # Set UFW defaults
-  sudo ufw --force reset  # Reset UFW to default settings
   sudo ufw default deny incoming
   sudo ufw default allow outgoing
 
@@ -521,7 +520,7 @@ setup_juicity() {
   # Return to the menu
 }
 
-# 18. Function to set up WireGuard | angristan
+# 18. Function to set up WireGuard
 setup_wireguard_angristan() {
   dialog --title "Setup WireGuard | angristan" --yesno "Do you want to set up WireGuard using angristan's script?" 10 60
   response=$?
@@ -538,7 +537,7 @@ setup_wireguard_angristan() {
   fi
 }
 
-# 19. Function to set up OpenVPN | angristan
+# 19. Function to set up OpenVPN
 setup_openvpn_angristan() {
   dialog --title "Setup OpenVPN | angristan" --yesno "Do you want to set up OpenVPN using angristan's script?" 10 60
   response=$?
@@ -666,9 +665,9 @@ while true; do
     15 "Setup/Manage Hysteria II" \
     16 "Setup/Manage TUIC v5" \
     17 "Setup/Manage Juicity" \
-    18 "Setup/Manage WireGuard | angristan" \
-    19 "Setup/Manage OpenVPN | angristan" \
-    20 "Setup IKEv2/IPsec | Lin Song"
+    18 "Setup/Manage WireGuard" \
+    19 "Setup/Manage OpenVPN" \
+    20 "Setup IKEv2/IPsec"
     21 "Setup Reverse TLS Tunnel" \
     22 "Create SSH User" \
     23 "Reboot System" \

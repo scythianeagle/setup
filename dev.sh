@@ -54,12 +54,12 @@ install_speedtest() {
   fi
 }
 
-# 4. Function to create a swap file
+# 4. Function to create a SWAP file
 create_swap_file() {
   if [ -f /swapfile ]; then
-    dialog --title "Swap File" --msgbox "A swap file already exists. Skipping swap file creation." 10 60
+    dialog --title "Swap File" --msgbox "A SWAP file already exists. Skipping swap file creation." 10 60
   else
-    dialog --title "Swap File" --inputbox "Enter the size of the swap file (e.g., 2G for 2 gigabytes):" 10 60 2> swap_size.txt
+    dialog --title "Swap File" --inputbox "Enter the size of the SWAP file (e.g., 2G for 2 gigabytes):" 10 60 2> swap_size.txt
     swap_size=$(cat swap_size.txt)
 
     if [[ "$swap_size" =~ ^[0-9]+[GgMm]$ ]]; then
@@ -72,9 +72,9 @@ create_swap_file() {
       sudo sysctl vm.vfs_cache_pressure=50
 	    echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
       echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
-      dialog --msgbox "Swap file created successfully with a size of $swap_size." 10 60
+      dialog --msgbox "SWAP file created successfully with a size of $swap_size." 10 60
     else
-      dialog --msgbox "Invalid swap file size. Please provide a valid size (e.g., 2G for 2 gigabytes)." 10 60
+      dialog --msgbox "Invalid SWAP file size. Please provide a valid size (e.g., 2G for 2 gigabytes)." 10 60
     fi
   fi
 }
@@ -92,7 +92,7 @@ enable_bbr() {
   fi
 }
 
-# 6. Function to enable Hybla
+# 6. Function to enable Hybla | 
 enable_hybla() {
   dialog --title "Enable Hybla" --yesno "Do you want to enable Hybla? Enabling Hybla while BBR is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
   response=$?
@@ -375,7 +375,7 @@ setup_mtproto_proxy_submenu() {
 
 # Function to set up MTProto Proxy
 setup_mtproto_proxy() {
-  dialog --title "Setup MTProto Proxy" --yesno "Do you want to set up an MTProto Proxy? It is recommended to install only one of these options, unless there are conflicts with other installations." 10 60
+  dialog --title "Setup MTProto Proxy" --yesno "Do you want to set up an MTProto Proxy? It is recommended to install only one of these options, Installing multiple options may lead to conflicts." 10 60
   response=$?
   if [ $response -eq 0 ]; then
     setup_mtproto_proxy_submenu
@@ -529,13 +529,13 @@ exit_script() {
 
 # Main menu options using dialog
 while true; do
-  choice=$(dialog --clear --backtitle "FreeIRAN v.1.2.1 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
+  choice=$(dialog --clear --backtitle "FreeIRAN v.1.3.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
     1 "System Update and Cleanup" \
     2 "Install Essential Packages" \
     3 "Install Speedtest" \
     4 "Create Swap File" \
     5 "Enable BBR" \
-    6 "Enable Hybla" \
+    6 "Enable Hybla | Rahgozar" \
     7 "Schedule Automatic Updates & ReStarts" \
     8 "Install Multiprotocol VPN Panels" \
     9 "Obtain SSL Certificates" \

@@ -216,7 +216,7 @@ enable_and_configure_cron() {
   fi
 }
 
-# 8. Function to Install Multiprotocol VPN Panels
+# Function to Install Multiprotocol VPN Panels
 install_vpn_panel() {
   # Ask the user if they want to install VPN panels
   dialog --title "Install Multiprotocol VPN Panels" --yesno "Would you like to install Multiprotocol VPN Panels?" 10 60
@@ -268,6 +268,9 @@ install_vpn_panel() {
         return
         ;;
     esac
+
+    # Wait for user to press Enter
+    read -p "Please Press Enter to continue."
   else
     dialog --msgbox "VPN panel installation skipped." 10 40
   fi

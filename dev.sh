@@ -226,7 +226,7 @@ install_vpn_panel() {
     "5" "X-UI En | FranzKafkaYu" \
     "6" "reality-ezpz | aleskxyz" \
     "7" "Hiddify" \
-    "8" "Marzban | Gozargah" 2> vpn_choice.txt)
+    "8" "Marzban | Gozargah" 2> vpn_choice.txt
 
   vpn_choice=$(cat vpn_choice.txt)
 

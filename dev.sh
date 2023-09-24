@@ -550,7 +550,7 @@ setup_ikev2_ipsec() {
   fi
 }
 
-# 18. Function to setup Reverse Tls Tunnel
+# 21. Function to setup Reverse Tls Tunnel
 setup_reverse_tls_tunnel() {
   # Ask the user if they want to install Reverse Tls Tunnel
   dialog --title "Setup Reverse Tls Tunnel" --yesno "Do you want to install Reverse Tls Tunnel developed by radkesvat?" 10 60
@@ -573,7 +573,7 @@ setup_reverse_tls_tunnel() {
   fi
 }
 
-# 19. Function to create a non-root SSH user
+# 22. Function to create a non-root SSH user
 create_ssh_user() {
   # Ask the user for the username
   dialog --title "Create SSH User" --inputbox "Enter the username for the new SSH user:" 10 60 2> username.txt
@@ -605,7 +605,7 @@ create_ssh_user() {
   dialog --title "SSH User Created" --msgbox "SSH user '$username' has been created successfully.\n\nUsername: $username\nPassword: $password" 12 60
 }
 
-# 20. Function to reboot the system
+# 23. Function to reboot the system
 reboot_system() {
   dialog --title "Reboot System" --yesno "Do you want to reboot the system?" 10 60
   response=$?
@@ -618,7 +618,7 @@ reboot_system() {
   fi
 }
 
-# 21. Function to exit the script
+# 24. Function to exit the script
 exit_script() {
   clear  # Clear the terminal screen for a clean exit
   echo "Exiting the script. Goodbye!"

@@ -218,7 +218,7 @@ enable_and_configure_cron() {
 
 # 8. Function to Install Multiprotocol VPN Panel
 install_vpn_panel() {
-  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 6 \
+  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 8 \
     "1" "X-UI | Alireza" \
     "2" "X-UI | MHSanaei" \
     "3" "X-UI | vaxilu" \

@@ -49,7 +49,7 @@ system_update() {
 
 # 2. Function to install essential packages
 install_essential_packages() {
-  dialog --title "Install Essential Packages" --yesno "This operation will install essential packages. Do you want to proceed?" 10 60
+  dialog --title "Install Essential Packages" --yesno "This operation will install essential packages like certbot,net-tools,zip and xclip. Do you want to proceed?" 10 60
   response=$?
 
   if [ $response -eq 0 ]; then
@@ -183,7 +183,7 @@ enable_hybla() {
 # 7. Function to enable and configure Cron
 enable_and_configure_cron() {
   # Prompt for automatic updates
-  dialog --title "Enable Automatic Updates" --yesno "Would you like to enable automatic updates? This will schedule system updates every night at 01:00 +3:30 GMT." 10 60
+  dialog --title "Enable Automatic Updates" --yesno "Would you like to enable automatic updates? This will schedule system updates every night at 00:30 +3:30 GMT." 10 60
   update_response=$?
 
   # Prompt for scheduling system restarts

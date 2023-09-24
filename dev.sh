@@ -251,11 +251,11 @@ install_vpn_panel() {
       ;;
     "7")
       # Installation code for Hiddify
-      sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+      bash <(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)
       ;;
     "8")
       # Installation code for Marzban | Gozargah
-      sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
+      bash <(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh) install
       # Create a sudo admin for Marzban dashboard
       marzban cli admin create --sudo
       ;;

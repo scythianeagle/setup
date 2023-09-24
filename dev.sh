@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FreeIRAN v1.3.0
+# FreeIRAN v1.3.0 Alpha
 # -----------------------------------------------------------------------------
 # Description: This script automates the setup and configuration of various
 #              utilities and services on a Linux server for a secure and
@@ -216,8 +216,9 @@ enable_and_configure_cron() {
   fi
 }
 
-# 8. Function to Install Multiprotocol VPN Panels
-choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install:" 15 60 8 \
+# 8. Function to Install Multiprotocol VPN Panel
+install_vpn_panel() {
+  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 6 \
     "1" "X-UI | Alireza" \
     "2" "X-UI | MHSanaei" \
     "3" "X-UI | vaxilu" \
@@ -225,7 +226,9 @@ choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install
     "5" "X-UI En | FranzKafkaYu" \
     "6" "reality-ezpz | aleskxyz" \
     "7" "Hiddify" \
-    "8" "Marzban | Gozargah")
+    "8" "Marzban | Gozargah" 2> vpn_choice.txt
+     
+  vpn_choice=$(cat vpn_choice.txt)
 
   case $vpn_choice in
     "1")
@@ -247,13 +250,10 @@ choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install
       bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
       ;;
     "7")
-      # Installation code for Hiddify
-      bash <(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)
+      bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
       ;;
     "8")
-      # Installation code for Marzban | Gozargah
-      bash <(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh) install
-      # Create a sudo admin for Marzban dashboard
+      sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
       marzban cli admin create --sudo
       ;;
     *)
@@ -262,30 +262,21 @@ choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install
       ;;
   esac
 
-  # Prompt the user to press Enter before returning to the main menu
-  read -p "Please Press Enter to continue."
+  # Wait for the user to press Enter
+  read -p "Please press Enter to continue."
+
+  # Return to the menu
 }
 
 # 9. Function to obtain SSL certificates
 obtain_ssl_certificates() {
-  apt install -y certbot xclip
+  apt install -y certbot
   dialog --title "Obtain SSL Certificates" --yesno "Do you want to Get SSL Certificates?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
-    # Function to paste clipboard content into dialog input box
-    paste_clipboard() {
-      content="$(xclip -o -selection clipboard)"
-      if [ -n "$content" ]; then
-        echo "$content"
-      fi
-    }
-
-    email=$(paste_clipboard)
-    dialog --title "SSL Certificate Information" --inputbox "Enter your email:" 10 60 "$email" 2> email.txt
+    dialog --title "SSL Certificate Information" --inputbox "Enter your email:" 10 60 2> email.txt
     email=$(cat email.txt)
-    
-    domain=$(paste_clipboard)
-    dialog --title "SSL Certificate Information" --inputbox "Enter your domain (e.g., sub.domain.com):" 10 60 "$domain" 2> domain.txt
+    dialog --title "SSL Certificate Information" --inputbox "Enter your domain (e.g., sub.domain.com):" 10 60 2> domain.txt
     domain=$(cat domain.txt)
 
     if [ -n "$email" ] && [ -n "$domain" ]; then
@@ -630,7 +621,6 @@ reboot_system() {
 # 21. Function to exit the script
 exit_script() {
   clear  # Clear the terminal screen for a clean exit
-  tput sgr0  # Reset terminal attributes (including color)
   echo "Exiting the script. Goodbye!"
   exit 0  # Exit with a status code of 0 (indicating successful termination)
 }

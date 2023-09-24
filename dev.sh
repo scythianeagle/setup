@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FreeIRAN v.1.2.0 Beta
+# FreeIRAN v.1.3.0
 # Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
 # ErfanNamira
 # https://github.com/ErfanNamira/FreeIRAN
@@ -144,15 +144,17 @@ enable_and_configure_cron() {
   fi
 }
 
-# 8. Function to install Multiprotocol VPN Panel
+# 8. Function to install Multiprotocol VPN Panels
 install_vpn_panel() {
-  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 6 \
+  choice=$(dialog --title "Install Multiprotocol VPN Panels" --menu "Select a VPN Panel to Install:" 15 60 8 \
     "1" "X-UI | Alireza" \
     "2" "X-UI | MHSanaei" \
     "3" "X-UI | vaxilu" \
     "4" "X-UI | FranzKafkaYu" \
     "5" "X-UI En | FranzKafkaYu" \
-    "6" "reality-ezpz | aleskxyz" 2> vpn_choice.txt
+    "6" "reality-ezpz | aleskxyz" \
+    "7" "Hiddify" \
+    "8" "Marzban | Gozargah" 2> vpn_choice.txt)
 
   vpn_choice=$(cat vpn_choice.txt)
 
@@ -174,6 +176,16 @@ install_vpn_panel() {
       ;;
     "6")
       bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
+      ;;
+    "7")
+      # Installation code for Hiddify
+      sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+      ;;
+    "8")
+      # Installation code for Marzban | Gozargah
+      sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
+      # Create a sudo admin for Marzban dashboard
+      marzban cli admin create --sudo
       ;;
     *)
       dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
@@ -347,7 +359,21 @@ setup_tuic_v5() {
   read -p "Please Press Enter to continue"
 }
 
-# 17. Function to setup Reverse Tls Tunnel
+# 17. Function to setup Juicity
+setup_juicity() {
+  dialog --title "Setup Juicity" --yesno "Do you want to setup Juicity?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Juicity-Installer/main/juicity-installer.sh)
+    read -p "Juicity setup completed. Please Press Enter to continue."
+  else
+    dialog --msgbox "Skipping Juicity setup." 10 40
+  fi
+
+  # Return to the menu
+}
+
+# 18. Function to setup Reverse Tls Tunnel
 setup_reverse_tls_tunnel() {
   # Ask the user if they want to install Reverse Tls Tunnel
   dialog --title "Setup Reverse Tls Tunnel" --yesno "Do you want to install Reverse Tls Tunnel developed by radkesvat?" 10 60
@@ -370,7 +396,7 @@ setup_reverse_tls_tunnel() {
   fi
 }
 
-# 18.Function to create a non-root SSH user
+# 19.Function to create a non-root SSH user
 create_ssh_user() {
   # Ask the user for the username
   read -p "Enter the username for the new SSH user: " username
@@ -393,7 +419,7 @@ create_ssh_user() {
   read -p "Please Press Enter to continue"
 }
 
-# 19.Function to reboot the system
+# 20.Function to reboot the system
 reboot_system() {
   dialog --title "Reboot System" --yesno "Do you want to reboot the system?" 10 60
   response=$?
@@ -404,7 +430,7 @@ reboot_system() {
   fi
 }
 
-# 20.Function to exit the script
+# 21.Function to exit the script
 exit_script() {
   clear  # Clear the terminal screen for a clean exit
   echo "Exiting the script. Goodbye!"
@@ -413,7 +439,7 @@ exit_script() {
 
 # Main menu options using dialog
 while true; do
-  choice=$(dialog --clear --backtitle "FreeIRAN v.1.2.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
+  choice=$(dialog --clear --backtitle "FreeIRAN v.1.2.1 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
     1 "System Update and Cleanup" \
     2 "Install Essential Packages" \
     3 "Install Speedtest" \
@@ -430,10 +456,11 @@ while true; do
     14 "Deploy Erlang MTProto Proxy" \
     15 "Setup Hysteria II" \
     16 "Setup TUIC v5" \
-    17 "Setup Reverse Tls Tunnel" \
-    18 "Create SSH User" \
-    19 "Reboot System" \
-    20 "Exit Script" 3>&1 1>&2 2>&3)
+    17 "Setup Juicity" \
+    18 "Setup Reverse TLS Tunnel" \
+    19 "Create SSH User" \
+    20 "Reboot System" \
+    21 "Exit Script" 3>&1 1>&2 2>&3)
 
   case $choice in
     1) system_update ;;
@@ -452,10 +479,11 @@ while true; do
     14) deploy_erlang_mtproto_proxy ;;
     15) setup_hysteria_ii ;;
     16) setup_tuic_v5 ;;
-    17) setup_reverse_tls_tunnel ;;
-    18) create_ssh_user ;;
-    19) reboot_system ;;
-    20) exit_script ;;
+    17) setup_juicity ;;
+    18) setup_reverse_tls_tunnel ;;
+    19) create_ssh_user ;;
+    20) reboot_system ;;
+    21) exit_script ;;
     *) echo "Invalid option. Please try again." ;;
   esac
 done

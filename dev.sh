@@ -201,20 +201,19 @@ enable_and_configure_cron() {
       restarts_message="System restarts have been scheduled."
     else
       restarts_message="System restart scheduling skipped."
-    }
+    fi
 
     # Display appropriate messages based on user choices
     dialog --msgbox "$updates_message\n$restarts_message" 10 60
-  else
+else
     if [ $restart_response -eq 0 ]; then
       # Schedule system restarts without automatic updates
       echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
       dialog --msgbox "System restarts have been scheduled without automatic updates." 10 60
     else
       dialog --msgbox "Cron configuration skipped." 10 60
-    }
-  fi
-}
+    fi
+fi
 
 # 8. Function to Install Multiprotocol VPN Panels
 install_vpn_panel() {

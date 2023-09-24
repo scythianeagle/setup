@@ -135,7 +135,7 @@ enable_bbr() {
   fi
 }
 
-# 6. Function to enable Hybla | 
+# 6. Function to enable Hybla
 enable_hybla() {
   dialog --title "Enable Hybla" --yesno "Do you want to enable Hybla congestion control?\n\nEnabling Hybla while BBR is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
   response=$?

@@ -216,9 +216,8 @@ enable_and_configure_cron() {
   fi
 }
 
-# Function to Install Multiprotocol VPN Panels
-install_vpn_panel() {
-  choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install:" 15 60 8 \
+# 8. Function to Install Multiprotocol VPN Panels
+choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install:" 15 60 8 \
     "1" "X-UI | Alireza" \
     "2" "X-UI | MHSanaei" \
     "3" "X-UI | vaxilu" \
@@ -226,9 +225,7 @@ install_vpn_panel() {
     "5" "X-UI En | FranzKafkaYu" \
     "6" "reality-ezpz | aleskxyz" \
     "7" "Hiddify" \
-    "8" "Marzban | Gozargah" 2> vpn_choice.txt
-
-  vpn_choice=$(cat vpn_choice.txt)
+    "8" "Marzban | Gozargah")
 
   case $vpn_choice in
     "1")

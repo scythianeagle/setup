@@ -216,8 +216,13 @@ https://github.com/radkesvat/ReverseTlsTunnel
 https://github.com/deathline94/Juicity-Installer
 https://github.com/deathline94/tuic-v5-installer
 https://github.com/deathline94/Hysteria-Installer
+https://github.com/HirbodBehnam/MTProtoProxyInstaller
 https://github.com/sssvip/simple-file-server
+https://github.com/angristan/wireguard-install
+https://github.com/angristan/openvpn-install
 https://github.com/blocklistproject/Lists
+https://github.com/hwdsl2/setup-ipsec-vpn
+https://github.com/rahgozar94725/freedom
 https://github.com/seriyps/mtproto_proxy
 https://github.com/P3TERX/warp.sh
 ```

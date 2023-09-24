@@ -653,7 +653,7 @@ while true; do
     3 "Install Speedtest" \
     4 "Create Swap File" \
     5 "Enable BBR" \
-    6 "Enable Hybla | Rahgozar" \
+    6 "Enable Hybla" \
     7 "Schedule Automatic Updates & ReStarts" \
     8 "Install Multiprotocol VPN Panels" \
     9 "Obtain SSL Certificates" \

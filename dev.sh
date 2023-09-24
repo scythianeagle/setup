@@ -360,8 +360,11 @@ setup_pi_hole() {
 
 # 11. Function to change SSH port
 change_ssh_port() {
+  # Provide information about changing SSH port
+  dialog --title "Change SSH Port" --msgbox "Changing the SSH port can enhance security by reducing automated SSH login attempts. However, it's essential to choose a port that is not already in use and to update your SSH client configuration accordingly.\n\nPlease consider the following:\n- Choose a port number between 1025 and 49151 (unprivileged ports).\n- Avoid well-known ports (e.g., 22, 80, 443).\n- Ensure that the new port is open in your firewall rules.\n- Update your SSH client configuration to use the new port." 14 80
+
   # Prompt the user for the new SSH port
-  dialog --title "Change SSH Port" --inputbox "Enter the new SSH port:" 10 60 2> ssh_port.txt
+  dialog --title "Enter New SSH Port" --inputbox "Enter the new SSH port:" 10 60 2> ssh_port.txt
   new_ssh_port=$(cat ssh_port.txt)
 
   # Verify that a valid port number is provided
@@ -375,7 +378,7 @@ change_ssh_port() {
     # Reload SSH service to apply changes
     sudo systemctl reload sshd
 
-    dialog --msgbox "SSH port changed to $new_ssh_port. Please ensure that you apply related firewall rules and update your SSH client configuration accordingly." 10 60
+    dialog --msgbox "SSH port changed to $new_ssh_port. Ensure that you apply related firewall rules and update your SSH client configuration accordingly." 12 60
   else
     dialog --msgbox "Invalid port number. Please provide a valid port." 10 60
   fi
@@ -383,19 +386,22 @@ change_ssh_port() {
 
 # 12. Function to enable UFW
 enable_ufw() {
-  # Set defaults
+  # Set UFW defaults
+  sudo ufw --force reset  # Reset UFW to default settings
   sudo ufw default deny incoming
   sudo ufw default allow outgoing
 
   # Prompt the user for the SSH port to allow
-  dialog --title "Enable UFW - SSH Port" --inputbox "Enter the SSH port to allow:" 10 60 2> ssh_port.txt
+  dialog --title "Enable UFW - SSH Port" --inputbox "Enter the SSH port to allow (default is 22):" 10 60 2> ssh_port.txt
   ssh_port=$(cat ssh_port.txt)
 
-  # Allow SSH port
-  if [ -n "$ssh_port" ]; then
-    sudo ufw allow "$ssh_port"/tcp
-    sudo ufw limit "$ssh_port"/tcp
+  # Check if the SSH port is empty and set it to default (22) if not provided
+  if [ -z "$ssh_port" ]; then
+    ssh_port=22
   fi
+
+  # Allow SSH port
+  sudo ufw allow "$ssh_port/tcp"
 
   # Prompt the user for additional ports to open
   dialog --title "Enable UFW - Additional Ports" --inputbox "Enter additional ports to open (comma-separated, e.g., 80,443):" 10 60 2> ufw_ports.txt
@@ -405,7 +411,7 @@ enable_ufw() {
   if [ -n "$ufw_ports" ]; then
     IFS=',' read -ra ports_array <<< "$ufw_ports"
     for port in "${ports_array[@]}"; do
-      sudo ufw allow "$port"
+      sudo ufw allow "$port/tcp"
     done
   fi
 
@@ -414,7 +420,7 @@ enable_ufw() {
   sudo systemctl enable ufw
 
   # Display completion message
-  dialog --msgbox "UFW enabled and configured successfully." 12 60
+  dialog --msgbox "UFW enabled and configured successfully.\nSSH port $ssh_port and additional ports allowed." 12 60
 }
 
 # 13. Function to install and configure WARP Proxy
@@ -584,43 +590,55 @@ setup_reverse_tls_tunnel() {
   fi
 }
 
-# 19.Function to create a non-root SSH user
+# 19. Function to create a non-root SSH user
 create_ssh_user() {
   # Ask the user for the username
-  read -p "Enter the username for the new SSH user: " username
+  dialog --title "Create SSH User" --inputbox "Enter the username for the new SSH user:" 10 60 2> username.txt
+  username=$(cat username.txt)
 
-  # Ask the user for the password (securely)
-  read -s -p "Enter the password for the new SSH user: " password
-  echo
+  # Check if the username is empty
+  if [ -z "$username" ]; then
+    dialog --msgbox "Username cannot be empty. SSH user creation aborted." 10 60
+    return
+  fi
+
+  # Ask the user for a secure password
+  dialog --title "Create SSH User" --passwordbox "Enter a strong password for the new SSH user:" 10 60 2> password.txt
+  password=$(cat password.txt)
+
+  # Check if the password is empty
+  if [ -z "$password" ]; then
+    dialog --msgbox "Password cannot be empty. SSH user creation aborted." 10 60
+    return
+  fi
 
   # Create the user with the specified username
   sudo useradd -m -s /bin/bash "$username"
 
-  # Set the user's password
+  # Set the user's password securely
   echo "$username:$password" | sudo chpasswd
 
-  # Display a message with the created user details
-  echo "SSH user: $username"
-  echo "Password: $password"
-
-  # Wait for the user to press Enter
-  read -p "Please Press Enter to continue"
+  # Display the created username and password to the user
+  dialog --title "SSH User Created" --msgbox "SSH user '$username' has been created successfully.\n\nUsername: $username\nPassword: $password" 12 60
 }
 
-# 20.Function to reboot the system
+# 20. Function to reboot the system
 reboot_system() {
   dialog --title "Reboot System" --yesno "Do you want to reboot the system?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
+    dialog --infobox "Rebooting the system..." 5 30
+    sleep 2  # Display the message for 2 seconds before rebooting
     sudo reboot
   else
     dialog --msgbox "System reboot canceled." 10 40
   fi
 }
 
-# 21.Function to exit the script
+# 21. Function to exit the script
 exit_script() {
   clear  # Clear the terminal screen for a clean exit
+  tput sgr0  # Reset terminal attributes (including color)
   echo "Exiting the script. Goodbye!"
   exit 0  # Exit with a status code of 0 (indicating successful termination)
 }

@@ -373,6 +373,55 @@ setup_juicity() {
   # Return to the menu
 }
 
+# 18. Function to set up WireGuard | angristan
+setup_wireguard_angristan() {
+  dialog --title "Setup WireGuard | angristan" --yesno "Do you want to set up WireGuard using angristan's script?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    # Download and execute the WireGuard installation script
+    curl -O https://raw.githubusercontent.com/angristan/wireguard-install/master/wireguard-install.sh
+    chmod +x wireguard-install.sh
+    ./wireguard-install.sh
+
+    # Wait for the user to press Enter
+    read -p "Please press Enter to continue."
+  else
+    dialog --msgbox "Skipping WireGuard installation." 10 40
+  fi
+}
+
+# 19. Function to set up OpenVPN | angristan
+setup_openvpn_angristan() {
+  dialog --title "Setup OpenVPN | angristan" --yesno "Do you want to set up OpenVPN using angristan's script?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    # Download and execute the OpenVPN installation script
+    curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
+    chmod +x openvpn-install.sh
+    ./openvpn-install.sh
+
+    # Wait for the user to press Enter
+    read -p "Please press Enter to continue."
+  else
+    dialog --msgbox "Skipping OpenVPN installation." 10 40
+  fi
+}
+
+# 20. Function to set up IKEv2/IPsec
+setup_ikev2_ipsec() {
+  dialog --title "Setup IKEv2/IPsec" --yesno "Do you want to set up IKEv2/IPsec?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    # Download and execute the IKEv2/IPsec installation script
+    curl -fsSL https://get.vpnsetup.net -o vpn.sh && sudo sh vpn.sh
+
+    # Wait for the user to press Enter
+    read -p "Please press Enter to continue."
+  else
+    dialog --msgbox "Skipping IKEv2/IPsec setup." 10 40
+  fi
+}
+
 # 18. Function to setup Reverse Tls Tunnel
 setup_reverse_tls_tunnel() {
   # Ask the user if they want to install Reverse Tls Tunnel
@@ -454,13 +503,16 @@ while true; do
     12 "Enable UFW" \
     13 "Install & Configure WARP Proxy" \
     14 "Deploy Erlang MTProto Proxy" \
-    15 "Setup Hysteria II" \
-    16 "Setup TUIC v5" \
-    17 "Setup Juicity" \
-    18 "Setup Reverse TLS Tunnel" \
-    19 "Create SSH User" \
-    20 "Reboot System" \
-    21 "Exit Script" 3>&1 1>&2 2>&3)
+    15 "Setup/Manage Hysteria II" \
+    16 "Setup/Manage TUIC v5" \
+    17 "Setup/Manage Juicity" \
+    18 "Setup/Manage WireGuard | angristan" \
+    19 "Setup/Manage OpenVPN | angristan" \
+    20 "Setup IKEv2/IPsec | Lin Song"
+    21 "Setup Reverse TLS Tunnel" \
+    22 "Create SSH User" \
+    23 "Reboot System" \
+    24 "Exit Script" 3>&1 1>&2 2>&3)
 
   case $choice in
     1) system_update ;;
@@ -480,10 +532,13 @@ while true; do
     15) setup_hysteria_ii ;;
     16) setup_tuic_v5 ;;
     17) setup_juicity ;;
-    18) setup_reverse_tls_tunnel ;;
-    19) create_ssh_user ;;
-    20) reboot_system ;;
-    21) exit_script ;;
+    18) setup_wireguard_angristan ;;
+    19) setup_openvpn_angristan ;;
+    20) setup_ikev2_ipsec ;;
+    21) setup_reverse_tls_tunnel ;;
+    22) create_ssh_user ;;
+    23) reboot_system ;;
+    24) exit_script ;;
     *) echo "Invalid option. Please try again." ;;
   esac
 done

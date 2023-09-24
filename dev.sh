@@ -1,9 +1,23 @@
 #!/bin/bash
 
-# FreeIRAN v.1.3.0
-# Brave hearts unite for a Free Iran, lighting the path to a brighter future with unwavering determination.
-# ErfanNamira
-# https://github.com/ErfanNamira/FreeIRAN
+# FreeIRAN v1.3.0
+# -----------------------------------------------------------------------------
+# Description: This script automates the setup and configuration of various
+#              utilities and services on a Linux server for a secure and
+#              optimized environment, with a focus on enhancing internet
+#              freedom and privacy in Iran.
+#
+# Author: Erfan Namira
+# GitHub: https://github.com/ErfanNamira/FreeIRAN
+#
+# Disclaimer: This script is provided for educational and informational
+#             purposes only. Use it responsibly and in compliance with all
+#             applicable laws and regulations.
+#
+# Note: Make sure to review and understand each section of the script before
+#       running it on your system. Some configurations may require manual
+#       adjustments based on your specific needs and server setup.
+# -----------------------------------------------------------------------------
 
 # Check for sudo privileges
 if [[ $EUID -ne 0 ]]; then
@@ -17,28 +31,44 @@ fi
 
 # 1. Function to perform system updates and cleanup
 system_update() {
-  sudo apt update -y
-  sudo apt upgrade -y
-  sudo apt autoremove -y
-  sudo apt autoclean -y
-  sudo apt clean -y
+  dialog --title "System Update and Cleanup" --yesno "This operation will update your system and remove unnecessary packages. Do you want to proceed?" 10 60
+  response=$?
+  
+  if [ $response -eq 0 ]; then
+    sudo apt update -y
+    sudo apt upgrade -y
+    sudo apt autoremove -y
+    sudo apt autoclean -y
+    sudo apt clean -y
 
-  dialog --msgbox "System updates and cleanup completed." 10 60
+    dialog --msgbox "System updates and cleanup completed." 10 60
+  else
+    dialog --msgbox "System updates and cleanup operation canceled." 10 60
+  fi
 }
 
 # 2. Function to install essential packages
 install_essential_packages() {
-  packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "net-tools" "zip" "unzip")
+  dialog --title "Install Essential Packages" --yesno "This operation will install essential packages. Do you want to proceed?" 10 60
+  response=$?
 
-  package_installed() {
-    dpkg -l | grep -q "^ii  $1"
-  }
+  if [ $response -eq 0 ]; then
+    packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "net-tools" "zip" "unzip" "xclip")
 
-  for pkg in "${packages[@]}"; do
-    if ! package_installed "$pkg"; then
-      sudo apt install -y "$pkg"
-    fi
-  done
+    package_installed() {
+      dpkg -l | grep -q "^ii  $1"
+    }
+
+    for pkg in "${packages[@]}"; do
+      if ! package_installed "$pkg"; then
+        sudo apt install -y "$pkg"
+      fi
+    done
+
+    dialog --msgbox "Essential packages have been installed." 10 60
+  else
+    dialog --msgbox "Installation of essential packages canceled." 10 60
+  fi
 }
 
 # 3. Function to install Speedtest
@@ -46,55 +76,68 @@ install_speedtest() {
   dialog --title "Install Speedtest" --yesno "Do you want to install Speedtest?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
+    dialog --infobox "Installing Speedtest. Please wait..." 10 60
     curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
     sudo apt-get -y install speedtest
-    dialog --msgbox "Speedtest has been installed successfully. You can now run it by entering 'speedtest' in the terminal." 10 40
+    dialog --msgbox "Speedtest has been installed successfully. You can now run it by entering 'speedtest' in the terminal." 10 60
   else
-    dialog --msgbox "Skipping installation of Speedtest." 10 40
+    dialog --msgbox "Skipping installation of Speedtest." 10 60
   fi
 }
 
 # 4. Function to create a SWAP file
 create_swap_file() {
-  if [ -f /swapfile ]; then
-    dialog --title "Swap File" --msgbox "A SWAP file already exists. Skipping swap file creation." 10 60
-  else
-    dialog --title "Swap File" --inputbox "Enter the size of the SWAP file (e.g., 2G for 2 gigabytes):" 10 60 2> swap_size.txt
-    swap_size=$(cat swap_size.txt)
-
-    if [[ "$swap_size" =~ ^[0-9]+[GgMm]$ ]]; then
-      sudo fallocate -l "$swap_size" /swapfile
-      sudo chmod 600 /swapfile
-      sudo mkswap /swapfile
-      sudo swapon /swapfile
-	    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-      sudo sysctl vm.swappiness=10
-      sudo sysctl vm.vfs_cache_pressure=50
-	    echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
-      echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
-      dialog --msgbox "SWAP file created successfully with a size of $swap_size." 10 60
+  dialog --title "Create SWAP File" --yesno "Do you want to create a SWAP file?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    if [ -f /swapfile ]; then
+      dialog --title "Swap File" --msgbox "A SWAP file already exists. Skipping swap file creation." 10 60
     else
-      dialog --msgbox "Invalid SWAP file size. Please provide a valid size (e.g., 2G for 2 gigabytes)." 10 60
+      dialog --title "Swap File" --inputbox "Enter the size of the SWAP file (e.g., 2G for 2 gigabytes):" 10 60 2> swap_size.txt
+      swap_size=$(cat swap_size.txt)
+
+      if [[ "$swap_size" =~ ^[0-9]+[GgMm]$ ]]; then
+        dialog --infobox "Creating SWAP file. Please wait..." 10 60
+        sudo fallocate -l "$swap_size" /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+        sudo sysctl vm.swappiness=10
+        sudo sysctl vm.vfs_cache_pressure=50
+        echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
+        echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
+        dialog --msgbox "SWAP file created successfully with a size of $swap_size." 10 60
+      else
+        dialog --msgbox "Invalid SWAP file size. Please provide a valid size (e.g., 2G for 2 gigabytes)." 10 60
+      fi
     fi
+  else
+    dialog --msgbox "Skipping SWAP file creation." 10 60
   fi
 }
 
 # 5. Function to enable BBR
 enable_bbr() {
-  dialog --title "Enable BBR" --yesno "Do you want to enable BBR? Enabling BBR while Hybla is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
+  dialog --title "Enable BBR" --yesno "Do you want to enable BBR congestion control?\n\nEnabling BBR while Hybla is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
   response=$?
   if [ $response -eq 0 ]; then
+    # Add BBR settings to sysctl.conf
     echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
     echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
-    dialog --msgbox "BBR enabled successfully." 10 40
+    
+    # Apply the new settings
+    sudo sysctl -p
+
+    dialog --msgbox "BBR congestion control has been enabled successfully." 10 60
   else
-    dialog --msgbox "BBR configuration skipped." 10 40
+    dialog --msgbox "BBR configuration skipped." 10 60
   fi
 }
 
 # 6. Function to enable Hybla | 
 enable_hybla() {
-  dialog --title "Enable Hybla" --yesno "Do you want to enable Hybla? Enabling Hybla while BBR is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
+  dialog --title "Enable Hybla" --yesno "Do you want to enable Hybla congestion control?\n\nEnabling Hybla while BBR is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
   response=$?
   if [ $response -eq 0 ]; then
     # Add lines to /etc/security/limits.conf
@@ -105,27 +148,33 @@ enable_hybla() {
     ulimit -n 51200
 
     # Add lines to /etc/ufw/sysctl.conf
-    echo "fs.file-max = 51200" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.core.rmem_max = 67108864" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.core.wmem_max = 67108864" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.core.netdev_max_backlog = 250000" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.core.somaxconn = 4096" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_syncookies = 1" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_tw_reuse = 1" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_tw_recycle = 0" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_fin_timeout = 30" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_keepalive_time = 1200" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.ip_local_port_range = 10000 65000" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_max_syn_backlog = 8192" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_max_tw_buckets = 5000" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_fastopen = 3" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_mem = 25600 51200 102400" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_rmem = 4096 87380 67108864" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_wmem = 4096 65536 67108864" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_mtu_probing = 1" | sudo tee -a /etc/ufw/sysctl.conf
-    echo "net.ipv4.tcp_congestion_control = hybla" | sudo tee -a /etc/ufw/sysctl.conf
+    sysctl_settings=(
+      "fs.file-max = 51200"
+      "net.core.rmem_max = 67108864"
+      "net.core.wmem_max = 67108864"
+      "net.core.netdev_max_backlog = 250000"
+      "net.core.somaxconn = 4096"
+      "net.ipv4.tcp_syncookies = 1"
+      "net.ipv4.tcp_tw_reuse = 1"
+      "net.ipv4.tcp_tw_recycle = 0"
+      "net.ipv4.tcp_fin_timeout = 30"
+      "net.ipv4.tcp_keepalive_time = 1200"
+      "net.ipv4.ip_local_port_range = 10000 65000"
+      "net.ipv4.tcp_max_syn_backlog = 8192"
+      "net.ipv4.tcp_max_tw_buckets = 5000"
+      "net.ipv4.tcp_fastopen = 3"
+      "net.ipv4.tcp_mem = 25600 51200 102400"
+      "net.ipv4.tcp_rmem = 4096 87380 67108864"
+      "net.ipv4.tcp_wmem = 4096 65536 67108864"
+      "net.ipv4.tcp_mtu_probing = 1"
+      "net.ipv4.tcp_congestion_control = hybla"
+    )
 
-    dialog --msgbox "Hybla enabled successfully." 10 60
+    for setting in "${sysctl_settings[@]}"; do
+      echo "$setting" | sudo tee -a /etc/ufw/sysctl.conf
+    done
+
+    dialog --msgbox "Hybla congestion control has been enabled successfully." 10 60
   else
     dialog --msgbox "Hybla configuration skipped." 10 60
   fi
@@ -133,81 +182,117 @@ enable_hybla() {
 
 # 7. Function to enable and configure Cron
 enable_and_configure_cron() {
-  dialog --title "Enable and Configure Cron" --yesno "Would you like to enable and configure Cron? This will schedule automatic updates and system restarts every night at 01:00 +3:30 GMT." 10 60
-  response=$?
-  if [ $response -eq 0 ]; then
+  # Prompt for automatic updates
+  dialog --title "Enable Automatic Updates" --yesno "Would you like to enable automatic updates? This will schedule system updates every night at 01:00 +3:30 GMT." 10 60
+  update_response=$?
+
+  # Prompt for scheduling system restarts
+  dialog --title "Schedule System Restarts" --yesno "Would you like to schedule system restarts? This will schedule system restarts every night at 01:30 +3:30 GMT." 10 60
+  restart_response=$?
+
+  if [ $update_response -eq 0 ]; then
+    # Configure automatic updates using Cron
     echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
-    echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
-    dialog --msgbox "Cron enabled and configured successfully." 10 40
+    updates_message="Automatic updates have been enabled and scheduled."
+
+    if [ $restart_response -eq 0 ]; then
+      # Schedule system restarts using Cron
+      echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
+      restarts_message="System restarts have been scheduled."
+    else
+      restarts_message="System restart scheduling skipped."
+    }
+
+    # Display appropriate messages based on user choices
+    dialog --msgbox "$updates_message\n$restarts_message" 10 60
   else
-    dialog --msgbox "Cron configuration skipped." 10 40
+    if [ $restart_response -eq 0 ]; then
+      # Schedule system restarts without automatic updates
+      echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
+      dialog --msgbox "System restarts have been scheduled without automatic updates." 10 60
+    else
+      dialog --msgbox "Cron configuration skipped." 10 60
+    }
   fi
 }
 
-# 8. Function to install Multiprotocol VPN Panels
+# 8. Function to Install Multiprotocol VPN Panels
 install_vpn_panel() {
-  choice=$(dialog --title "Install Multiprotocol VPN Panels" --menu "Select a VPN Panel to Install:" 15 60 8 \
-    "1" "X-UI | Alireza" \
-    "2" "X-UI | MHSanaei" \
-    "3" "X-UI | vaxilu" \
-    "4" "X-UI | FranzKafkaYu" \
-    "5" "X-UI En | FranzKafkaYu" \
-    "6" "reality-ezpz | aleskxyz" \
-    "7" "Hiddify" \
-    "8" "Marzban | Gozargah" 2> vpn_choice.txt)
+  # Ask the user if they want to install VPN panels
+  dialog --title "Install Multiprotocol VPN Panels" --yesno "Would you like to install Multiprotocol VPN Panels?" 10 60
+  response=$?
+  if [ $response -eq 0 ]; then
+    choice=$(dialog --title "Select VPN Panel" --menu "Choose a VPN Panel to Install:" 15 60 8 \
+      "1" "X-UI | Alireza" \
+      "2" "X-UI | MHSanaei" \
+      "3" "X-UI | vaxilu" \
+      "4" "X-UI | FranzKafkaYu" \
+      "5" "X-UI En | FranzKafkaYu" \
+      "6" "reality-ezpz | aleskxyz" \
+      "7" "Hiddify" \
+      "8" "Marzban | Gozargah" 2> vpn_choice.txt)
 
-  vpn_choice=$(cat vpn_choice.txt)
+    vpn_choice=$(cat vpn_choice.txt)
 
-  case $vpn_choice in
-    "1")
-      bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
-      ;;
-    "2")
-      bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
-      ;;
-    "3")
-      bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
-      ;;
-    "4")
-      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
-      ;;
-    "5")
-      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install_en.sh)
-      ;;
-    "6")
-      bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
-      ;;
-    "7")
-      # Installation code for Hiddify
-      sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
-      ;;
-    "8")
-      # Installation code for Marzban | Gozargah
-      sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
-      # Create a sudo admin for Marzban dashboard
-      marzban cli admin create --sudo
-      ;;
-    *)
-      dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
-      return
-      ;;
-  esac
-
-  # Wait for the user to press Enter
-  read -p "Please press Enter to continue."
-
-  # Return to the menu
+    case $vpn_choice in
+      "1")
+        bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
+        ;;
+      "2")
+        bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+        ;;
+      "3")
+        bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+        ;;
+      "4")
+        bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
+        ;;
+      "5")
+        bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install_en.sh)
+        ;;
+      "6")
+        bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
+        ;;
+      "7")
+        # Installation code for Hiddify
+        sudo bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+        ;;
+      "8")
+        # Installation code for Marzban | Gozargah
+        sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
+        # Create a sudo admin for Marzban dashboard
+        marzban cli admin create --sudo
+        ;;
+      *)
+        dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
+        return
+        ;;
+    esac
+  else
+    dialog --msgbox "VPN panel installation skipped." 10 40
+  fi
 }
 
 # 9. Function to obtain SSL certificates
 obtain_ssl_certificates() {
-  apt install -y certbot
+  apt install -y certbot xclip
   dialog --title "Obtain SSL Certificates" --yesno "Do you want to Get SSL Certificates?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
-    dialog --title "SSL Certificate Information" --inputbox "Enter your email:" 10 60 2> email.txt
+    # Function to paste clipboard content into dialog input box
+    paste_clipboard() {
+      content="$(xclip -o -selection clipboard)"
+      if [ -n "$content" ]; then
+        echo "$content"
+      fi
+    }
+
+    email=$(paste_clipboard)
+    dialog --title "SSL Certificate Information" --inputbox "Enter your email:" 10 60 "$email" 2> email.txt
     email=$(cat email.txt)
-    dialog --title "SSL Certificate Information" --inputbox "Enter your domain (e.g., sub.domain.com):" 10 60 2> domain.txt
+    
+    domain=$(paste_clipboard)
+    dialog --title "SSL Certificate Information" --inputbox "Enter your domain (e.g., sub.domain.com):" 10 60 "$domain" 2> domain.txt
     domain=$(cat domain.txt)
 
     if [ -n "$email" ] && [ -n "$domain" ]; then
@@ -229,13 +314,15 @@ obtain_ssl_certificates() {
 
 # 10. Function to set up Pi-Hole
 setup_pi_hole() {
-  # Ask if you want to install Pi-Hole, a network-wide ad blocker
-  dialog --title "Install Pi-Hole" --yesno "Do you want to install Pi-Hole, the network-wide ad blocker?" 10 60
+  # Provide information about Pi-Hole and its benefits
+  dialog --title "Install Pi-Hole" --yesno "Pi-Hole is a network-wide ad blocker that can improve your online experience by blocking ads at the network level. Do you want to install Pi-Hole?" 12 60
   response=$?
 
   if [ $response -eq 0 ]; then
+    # Install Pi-Hole
     curl -sSL https://install.pi-hole.net | bash
 
+    # Ask if the user wants to change the Pi-Hole web interface password
     dialog --title "Change Pi-Hole Web Interface Password" --yesno "Do you want to change the Pi-Hole web interface password?" 10 60
     response=$?
     if [ $response -eq 0 ]; then
@@ -245,6 +332,17 @@ setup_pi_hole() {
       dialog --msgbox "Skipping Pi-Hole web interface password change." 10 40
     fi
 
+    # Ask if the user wants to configure Pi-Hole as a DHCP server
+    dialog --title "Configure Pi-Hole as a DHCP Server" --yesno "Do you want to configure Pi-Hole as a DHCP server? This can help manage your local network's IP addresses and improve ad blocking. Note: Ensure that your router's DHCP server is disabled." 12 60
+    response=$?
+    if [ $response -eq 0 ]; then
+      # Provide DHCP configuration instructions here
+      dialog --title "Pi-Hole DHCP Configuration" --msgbox "To configure Pi-Hole as a DHCP server, go to the Pi-Hole web interface (http://pi.hole/admin) and navigate to 'Settings' > 'DHCP.' Follow the instructions to enable DHCP and specify the IP range for your local network." 12 80
+    else
+      dialog --msgbox "Skipping Pi-Hole DHCP server configuration." 10 40
+    fi
+
+    # Ask if the user wants to change the Lighttpd port
     if [ -f /etc/lighttpd/lighttpd.conf ]; then
       dialog --title "Change Lighttpd Port" --yesno "If you have installed Pi-Hole, then Lighttpd is listening on port 80 by default. Do you want to change the Lighttpd port?" 10 60
       response=$?

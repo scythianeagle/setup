@@ -667,7 +667,7 @@ while true; do
     17 "Setup/Manage Juicity" \
     18 "Setup/Manage WireGuard" \
     19 "Setup/Manage OpenVPN" \
-    20 "Setup IKEv2/IPsec"
+    20 "Setup IKEv2/IPsec" \
     21 "Setup Reverse TLS Tunnel" \
     22 "Create SSH User" \
     23 "Reboot System" \

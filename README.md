@@ -210,8 +210,10 @@ https://github.com/pi-hole
 https://github.com/vaxilu/x-ui
 https://github.com/alireza0/x-ui
 https://github.com/MHSanaei/3x-ui
+https://github.com/Gozargah/Marzban
 https://github.com/FranzKafkaYu/x-ui
 https://github.com/aleskxyz/reality-ezpz
+https://github.com/hiddify/Hiddify-Server
 https://github.com/radkesvat/ReverseTlsTunnel
 https://github.com/deathline94/Juicity-Installer
 https://github.com/deathline94/tuic-v5-installer

@@ -11,7 +11,7 @@ What does this script do? you can select to:
 5. Enable BBR 🛸
 6. Enable Hybla 🌐
 7. Schedule Automatic Updates & Restarts at 01:00 GMT+3:30 ⏳
-8. Install Multiprotocol VPN Panels (Alireza/MHSanaei/Reality-EZPZ/vaxilu/FranzKafkaYu) 🦄
+8. Install Multiprotocol VPN Panels (Alireza/MHSanaei/Reality-EZPZ/Marzban/Hiddify/vaxilu/FranzKafkaYu) 🦄
 9. Obtain SSL Certificates 🗺️
 10. Install Pi-Hole network-wide Adblocker 🛡️
 11. Change SSH Port 🥅

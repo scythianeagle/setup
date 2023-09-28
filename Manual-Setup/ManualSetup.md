@@ -153,3 +153,12 @@ sudo ufw enable
 sudo ufw status verbose
 sudo systemctl enable ufw
 ```
+### Useful Commands
+For tasks like testing network speed and other related measurements.
+```
+netstat -tulnp
+sudo shutdown -r now
+cat /proc/cpuinfo
+wget https://releases.ubuntu.com/22.04.3/ubuntu-22.04.3-live-server-amd64.iso
+curl -sL network-speed.xyz | bash
+```

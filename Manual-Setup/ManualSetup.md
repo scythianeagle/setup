@@ -81,3 +81,75 @@ sudo service lighttpd restart
 curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
 ```
 ### WARP Proxy
+```
+bash <(curl -fsSL git.io/warp.sh) proxy
+```
+WARP XrayConfig
+```
+{
+  "protocol": "socks",
+  "settings": {
+    "servers": [
+      { 
+        "address": "127.0.0.1",
+        "port":40000
+      }
+    ]
+  },
+  "tag":"warp"
+},
+```
+### Hysteria II
+```
+bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
+```
+### TUIC v5
+```
+bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)
+```
+### Change Local DNS to PiHole
+```
+sudo nano /etc/resolv.conf
+nameserver 127.0.0.53
+sudo systemctl daemon-reload
+```
+### qbittorrent-nox
+```
+sudo add-apt-repository ppa:qbittorrent-team/qbittorrent-stable
+sudo apt update
+sudo apt install qbittorrent-nox
+sudo nano /etc/systemd/system/qbittorrent-nox.service
+qbittorrent-nox
+sudo adduser --system --group qbittorrent-nox
+sudo adduser root qbittorrent-nox
+sudo systemctl daemon-reload
+sudo systemctl enable qbittorrent-nox
+sudo systemctl start qbittorrent-nox
+sudo systemctl status qbittorrent-nox
+```
+qbittorrent-nox.service
+```
+[Unit]
+Description=qBittorrent-nox
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/qbittorrent-nox -d --webui-port=8000
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+### Enable UFW
+```
+sudo nano /etc/default/ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow SSHPORT/tcp
+sudo ufw limit SSHPORT/tcp
+sudo ufw allow 443
+sudo ufw enable
+sudo ufw status verbose
+sudo systemctl enable ufw
+```

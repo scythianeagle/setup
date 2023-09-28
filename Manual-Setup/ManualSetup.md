@@ -39,3 +39,45 @@ sudo nano /etc/sysctl.conf
 vm.swappiness=10
 vm.vfs_cache_pressure=50
 ```
+### Change SSH Port
+```
+sudo nano /etc/ssh/sshd_config
+sudo systemctl reload sshd
+```
+### SettingUp Cron
+```
+sudo systemctl enable cron
+crontab -e
+```
+```
+00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y
+30 22 * * * /sbin/shutdown -r
+```
+### Obtaining SSL Certificate
+```
+sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email mymail@gmail.com -d sub.domain.com
+```
+### Installing X-UI
+```
+bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
+```
+For Iran Servers
+```
+wget https://github.com/alireza0/x-ui/releases/download/1.5.5/x-ui-linux-amd64.tar.gz
+sudo tar -xvf x-ui-linux-amd64.tar.gz
+cd /home/ubuntu/x-ui
+sudo chmod +x x-ui.sh
+sudo ./x-ui.sh
+```
+### Installing Pi-Hole
+```
+curl -sSL https://install.pi-hole.net | bash
+pihole -a -p
+sudo nano /etc/lighttpd/lighttpd.conf
+sudo service lighttpd restart
+```
+### Erlang MTProto proxy
+```
+curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
+```
+### WARP Proxy

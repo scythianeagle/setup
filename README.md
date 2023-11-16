@@ -201,11 +201,6 @@ sudo /home/qbittorrent-nox/Downloads/simplefileserver 80
   "tag":"warp"
 },
 ```
-## Join Our Telegram Channel 📢
-
-[![Telegram Channel](https://img.shields.io/badge/Join%20Us%20on%20Telegram-Blue.svg?logo=telegram)](https://t.me/iP_CF)
-
-Join our Telegram channel for the latest updates, clean Cloudflare IPs, and free VPN configurations. Stay connected with our community!
 
 ## Used Projects 💞
 ```

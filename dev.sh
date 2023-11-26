@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FreeIRAN v1.3.0 Alpha
+# FreeIRAN v1.4.0
 # -----------------------------------------------------------------------------
 # Description: This script automates the setup and configuration of various
 #              utilities and services on a Linux server for a secure and
@@ -19,105 +19,130 @@
 #       adjustments based on your specific needs and server setup.
 # -----------------------------------------------------------------------------
 
-# Check for sudo privileges
-if [[ $EUID -ne 0 ]]; then
-  if [[ $(sudo -n true 2>/dev/null) ]]; then
-    echo "This script will be run with sudo privileges."
-  else
-    echo "This script must be run with sudo privileges."
-    exit 1
-  fi
-fi
+# Function to check for sudo privileges
+check_sudo() {
+    if [[ $EUID -ne 0 ]]; then
+        if ! sudo -n true 2>/dev/null; then
+            echo "This script must be run with sudo privileges."
+            exit 1
+        fi
+    fi
+}
+
+display_intro() {
+    clear
+    echo "Welcome to FreeIRAN Setup Script v1.4.0"
+    echo "---------------------------------------"
+    echo "This script will configure various utilities and services"
+    echo "to enhance internet freedom and privacy in Iran."
+    echo ""
+    echo "Please review the disclaimer and script description before proceeding."
+    echo ""
+    echo "WARNING: Some steps, installations, system changes, and configurations"
+    echo "made by this script may be irreversible and cannot be reverted back to"
+    echo "the initial state. Proceed with caution and review each action carefully."
+    echo ""
+}
+
+# Function for error handling and input validation
+validate_input() {
+    read -rp "Would you kindly confirm your understanding and agreement to the disclaimer? (y/n): " choice
+    case $choice in
+        [Yy])
+            execute_setup
+            ;;
+        [Nn])
+            echo "Exiting script. No changes were made."
+            exit 0
+            ;;
+        *)
+            echo "Invalid input. Please enter 'y' or 'n'."
+            validate_input
+            ;;
+    esac
+}
+
+# Function to execute setup based on user confirmation
+execute_setup() {
+    echo "Executing setup..."
+    echo "Setup completed successfully!"
+}
+
+# Main function to run the script
+main() {
+    check_sudo
+    display_intro
+    validate_input
+}
 
 # 1. Function to perform system updates and cleanup
 system_update() {
-  dialog --title "System Update and Cleanup" --yesno "This operation will update your system and remove unnecessary packages. Do you want to proceed?" 10 60
-  response=$?
-  
-  if [ $response -eq 0 ]; then
-    sudo apt update -y
-    sudo apt upgrade -y
-    sudo apt autoremove -y
-    sudo apt autoclean -y
-    sudo apt clean -y
+    local confirm_update
+    confirm_update=$(dialog --clear --title "System Update and Cleanup" --yesno "This operation will update your system and remove unnecessary packages. Do you want to proceed?" 10 60 3>&1 1>&2 2>&3)
 
-    dialog --msgbox "System updates and cleanup completed." 10 60
-  else
-    dialog --msgbox "System updates and cleanup operation canceled." 10 60
-  fi
-}
+    if [[ $confirm_update == "0" ]]; then
+        echo "Performing system update and cleanup..."
+        sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y && sudo apt clean -y
 
-# 2. Function to install essential packages
-install_essential_packages() {
-  dialog --title "Install Essential Packages" --yesno "This operation will install essential packages like certbot,net-tools,zip and xclip. Do you want to proceed?" 10 60
-  response=$?
-
-  if [ $response -eq 0 ]; then
-    packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "net-tools" "zip" "unzip" "xclip")
-
-    package_installed() {
-      dpkg -l | grep -q "^ii  $1"
-    }
-
-    for pkg in "${packages[@]}"; do
-      if ! package_installed "$pkg"; then
-        sudo apt install -y "$pkg"
-      fi
-    done
-
-    dialog --msgbox "Essential packages have been installed." 10 60
-  else
-    dialog --msgbox "Installation of essential packages canceled." 10 60
-  fi
-}
-
-# 3. Function to install Speedtest
-install_speedtest() {
-  dialog --title "Install Speedtest" --yesno "Do you want to install Speedtest?" 10 60
-  response=$?
-  if [ $response -eq 0 ]; then
-    dialog --infobox "Installing Speedtest. Please wait..." 10 60
-    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
-    sudo apt-get -y install speedtest
-    dialog --msgbox "Speedtest has been installed successfully. You can now run it by entering 'speedtest' in the terminal." 10 60
-  else
-    dialog --msgbox "Skipping installation of Speedtest." 10 60
-  fi
-}
-
-# 4. Function to create a SWAP file
-create_swap_file() {
-  dialog --title "Create SWAP File" --yesno "Do you want to create a SWAP file?" 10 60
-  response=$?
-  if [ $response -eq 0 ]; then
-    if [ -f /swapfile ]; then
-      dialog --title "Swap File" --msgbox "A SWAP file already exists. Skipping swap file creation." 10 60
+        dialog --clear --msgbox "System updates and cleanup completed." 10 60
     else
-      dialog --title "Swap File" --inputbox "Enter the size of the SWAP file (e.g., 2G for 2 gigabytes):" 10 60 2> swap_size.txt
-      swap_size=$(cat swap_size.txt)
-
-      if [[ "$swap_size" =~ ^[0-9]+[GgMm]$ ]]; then
-        dialog --infobox "Creating SWAP file. Please wait..." 10 60
-        sudo fallocate -l "$swap_size" /swapfile
-        sudo chmod 600 /swapfile
-        sudo mkswap /swapfile
-        sudo swapon /swapfile
-        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-        sudo sysctl vm.swappiness=10
-        sudo sysctl vm.vfs_cache_pressure=50
-        echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
-        echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
-        dialog --msgbox "SWAP file created successfully with a size of $swap_size." 10 60
-      else
-        dialog --msgbox "Invalid SWAP file size. Please provide a valid size (e.g., 2G for 2 gigabytes)." 10 60
-      fi
+        dialog --clear --msgbox "System updates and cleanup operation canceled." 10 60
     fi
-  else
-    dialog --msgbox "Skipping SWAP file creation." 10 60
-  fi
 }
 
-# 5. Function to enable BBR
+# 2. Function to install Speedtest
+install_speedtest() {
+    local install_speedtest_prompt
+    install_speedtest_prompt=$(dialog --clear --title "Install Speedtest" --yesno "Do you want to install Speedtest?" 10 60 3>&1 1>&2 2>&3)
+
+    if [[ $install_speedtest_prompt == "0" ]]; then
+        dialog --clear --infobox "Installing Speedtest. Please wait..." 10 60
+        # Install Speedtest CLI
+        curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
+        sudo apt-get -y install speedtest
+
+        dialog --clear --msgbox "Speedtest has been installed successfully. You can now run it by entering 'speedtest' in the terminal." 10 60
+    else
+        dialog --clear --msgbox "Skipping installation of Speedtest." 10 60
+    fi
+}
+
+# 3. Function to create a SWAP file
+create_swap_file() {
+    local swap_size_file
+    swap_size_file=$(mktemp /tmp/swap_size.XXXXXX)
+    dialog --title "Create SWAP File" --yesno "Do you want to create a SWAP file?" 10 60
+
+    if [ $? -eq 0 ]; then
+        if [ -f /swapfile ]; then
+            dialog --title "Swap File" --msgbox "A SWAP file already exists. Skipping swap file creation." 10 60
+        else
+            dialog --title "Swap File" --inputbox "Enter the size of the SWAP file (e.g., 2G for 2 gigabytes):" 10 60 2> "$swap_size_file"
+            local swap_size=$(<"$swap_size_file")
+
+            if [[ "$swap_size" =~ ^[0-9]+[GgMm]$ ]]; then
+                dialog --infobox "Creating SWAP file. Please wait..." 10 60
+                sudo fallocate -l "$swap_size" /swapfile
+                sudo chmod 600 /swapfile
+                sudo mkswap /swapfile
+                sudo swapon /swapfile
+                echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+                sudo sysctl vm.swappiness=10
+                sudo sysctl vm.vfs_cache_pressure=50
+                echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
+                echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
+                dialog --msgbox "SWAP file created successfully with a size of $swap_size." 10 60
+            else
+                dialog --msgbox "Invalid SWAP file size. Please provide a valid size (e.g., 2G for 2 gigabytes)." 10 60
+            fi
+        fi
+    else
+        dialog --msgbox "Skipping SWAP file creation." 10 60
+    fi
+    rm "$swap_size_file" # Clean up temporary file
+}
+
+# 4. Function to enable BBR
 enable_bbr() {
   dialog --title "Enable BBR" --yesno "Do you want to enable BBR congestion control?\n\nEnabling BBR while Hybla is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
   response=$?
@@ -135,7 +160,7 @@ enable_bbr() {
   fi
 }
 
-# 6. Function to enable Hybla
+# 5. Function to enable Hybla
 enable_hybla() {
   dialog --title "Enable Hybla" --yesno "Do you want to enable Hybla congestion control?\n\nEnabling Hybla while BBR is enabled can lead to conflicts. Are you sure you want to proceed?" 12 60
   response=$?
@@ -180,44 +205,11 @@ enable_hybla() {
   fi
 }
 
-# 7. Function to enable and configure Cron
-enable_and_configure_cron() {
-  # Prompt for automatic updates
-  dialog --title "Enable Automatic Updates" --yesno "Would you like to enable automatic updates? This will schedule system updates every night at 00:30 +3:30 GMT." 10 60
-  update_response=$?
-
-  # Prompt for scheduling system restarts
-  dialog --title "Schedule System Restarts" --yesno "Would you like to schedule system restarts? This will schedule system restarts every night at 01:30 +3:30 GMT." 10 60
-  restart_response=$?
-
-  if [ $update_response -eq 0 ]; then
-    # Configure automatic updates using Cron
-    echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
-    updates_message="Automatic updates have been enabled and scheduled."
-
-    if [ $restart_response -eq 0 ]; then
-      # Schedule system restarts using Cron
-      echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
-      restarts_message="System restarts have been scheduled."
-    else
-      restarts_message="System restart scheduling skipped."
-    fi
-
-    # Display appropriate messages based on user choices
-    dialog --msgbox "$updates_message\n$restarts_message" 10 60
-  else
-    if [ $restart_response -eq 0 ]; then
-      # Schedule system restarts without automatic updates
-      echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
-      dialog --msgbox "System restarts have been scheduled without automatic updates." 10 60
-    else
-      dialog --msgbox "Cron configuration skipped." 10 60
-    fi
-  fi
-}
-
-# 8. Function to Install Multiprotocol VPN Panel
+# 6. Function to Install Multiprotocol VPN Panel
 install_vpn_panel() {
+  local vpn_choice_file
+  vpn_choice_file=$(mktemp /tmp/vpn_choice.XXXXXX)
+
   dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 8 \
     "1" "X-UI | Alireza" \
     "2" "X-UI | MHSanaei" \
@@ -226,9 +218,9 @@ install_vpn_panel() {
     "5" "X-UI En | FranzKafkaYu" \
     "6" "reality-ezpz | aleskxyz" \
     "7" "Hiddify" \
-    "8" "Marzban | Gozargah" 2> vpn_choice.txt
-     
-  vpn_choice=$(cat vpn_choice.txt)
+    "8" "Marzban | Gozargah" 2> "$vpn_choice_file"
+
+  local vpn_choice=$(<"$vpn_choice_file")
 
   case $vpn_choice in
     "1")
@@ -258,6 +250,7 @@ install_vpn_panel() {
       ;;
     *)
       dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
+      rm "$vpn_choice_file"
       return
       ;;
   esac
@@ -265,19 +258,25 @@ install_vpn_panel() {
   # Wait for the user to press Enter
   read -p "Please press Enter to continue."
 
-  # Return to the menu
+  rm "$vpn_choice_file"
 }
 
-# 9. Function to obtain SSL certificates
+# 7. Function to obtain SSL certificates
 obtain_ssl_certificates() {
-  apt install -y certbot
+  apt install -y certbot xclip
   dialog --title "Obtain SSL Certificates" --yesno "Do you want to Get SSL Certificates?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
-    dialog --title "SSL Certificate Information" --inputbox "Enter your email:" 10 60 2> email.txt
-    email=$(cat email.txt)
-    dialog --title "SSL Certificate Information" --inputbox "Enter your domain (e.g., sub.domain.com):" 10 60 2> domain.txt
-    domain=$(cat domain.txt)
+    local email_file="/tmp/email.txt"
+    local domain_file="/tmp/domain.txt"
+
+    xclip -selection clipboard -out > "$email_file"
+    dialog --title "SSL Certificate Information" --inputbox "Enter your email (Ctrl+Shift+V to paste):" 10 60 "$(cat "$email_file")" 2> "$email_file"
+    email=$(cat "$email_file")
+
+    xclip -selection clipboard -out > "$domain_file"
+    dialog --title "SSL Certificate Information" --inputbox "Enter your domain (e.g., sub.domain.com) (Ctrl+Shift+V to paste):" 10 60 "$(cat "$domain_file")" 2> "$domain_file"
+    domain=$(cat "$domain_file")
 
     if [ -n "$email" ] && [ -n "$domain" ]; then
       sudo certbot certonly --standalone --preferred-challenges http --agree-tos --email "$email" -d "$domain"
@@ -289,6 +288,9 @@ obtain_ssl_certificates() {
     else
       dialog --msgbox "Both email and domain are required to obtain SSL certificates." 10 60
     fi
+
+    # Clean up temporary files
+    rm "$email_file" "$domain_file"
   else
     dialog --msgbox "Skipping SSL certificate acquisition." 10 40
   fi
@@ -296,10 +298,10 @@ obtain_ssl_certificates() {
   # Return to the menu
 }
 
-# 10. Function to set up Pi-Hole
+# 8. Function to set up Pi-Hole
 setup_pi_hole() {
   # Provide information about Pi-Hole and its benefits
-  dialog --title "Install Pi-Hole" --yesno "Pi-Hole is a network-wide ad blocker that can improve your online experience by blocking ads at the network level. Do you want to install Pi-Hole?" 12 60
+  dialog --title "Install Pi-Hole" --yesno "Pi-Hole is a network-wide ad blocker that can enhance your online experience by blocking ads at the network level. Do you want to install Pi-Hole?" 12 60
   response=$?
 
   if [ $response -eq 0 ]; then
@@ -316,23 +318,13 @@ setup_pi_hole() {
       dialog --msgbox "Skipping Pi-Hole web interface password change." 10 40
     fi
 
-    # Ask if the user wants to configure Pi-Hole as a DHCP server
-    dialog --title "Configure Pi-Hole as a DHCP Server" --yesno "Do you want to configure Pi-Hole as a DHCP server? This can help manage your local network's IP addresses and improve ad blocking. Note: Ensure that your router's DHCP server is disabled." 12 60
-    response=$?
-    if [ $response -eq 0 ]; then
-      # Provide DHCP configuration instructions here
-      dialog --title "Pi-Hole DHCP Configuration" --msgbox "To configure Pi-Hole as a DHCP server, go to the Pi-Hole web interface (http://pi.hole/admin) and navigate to 'Settings' > 'DHCP.' Follow the instructions to enable DHCP and specify the IP range for your local network." 12 80
-    else
-      dialog --msgbox "Skipping Pi-Hole DHCP server configuration." 10 40
-    fi
-
     # Ask if the user wants to change the Lighttpd port
     if [ -f /etc/lighttpd/lighttpd.conf ]; then
-      dialog --title "Change Lighttpd Port" --yesno "If you have installed Pi-Hole, then Lighttpd is listening on port 80 by default. Do you want to change the Lighttpd port?" 10 60
+      dialog --title "Change Lighttpd Port" --yesno "Pi-Hole uses Lighttpd, which listens on port 80 by default. Do you want to change the Lighttpd port?" 10 60
       response=$?
       if [ $response -eq 0 ]; then
         sudo nano /etc/lighttpd/lighttpd.conf
-        dialog --msgbox "Lighttpd port changed." 10 60
+        dialog --msgbox "Lighttpd port changed successfully." 10 60
       else
         dialog --msgbox "Skipping Lighttpd port change." 10 40
       fi
@@ -342,7 +334,7 @@ setup_pi_hole() {
   fi
 }
 
-# 11. Function to change SSH port
+# 9. Function to change SSH port
 change_ssh_port() {
   # Provide information about changing SSH port
   dialog --title "Change SSH Port" --msgbox "Changing the SSH port can enhance security by reducing automated SSH login attempts. However, it's essential to choose a port that is not already in use and to update your SSH client configuration accordingly.\n\nPlease consider the following:\n- Choose a port number between 1025 and 49151 (unprivileged ports).\n- Avoid well-known ports (e.g., 22, 80, 443).\n- Ensure that the new port is open in your firewall rules.\n- Update your SSH client configuration to use the new port." 14 80
@@ -366,17 +358,19 @@ change_ssh_port() {
   else
     dialog --msgbox "Invalid port number. Please provide a valid port." 10 60
   fi
+
+  # Clean up temporary files
+  rm -f ssh_port.txt
 }
 
-# 12. Function to enable UFW
+# 10. Function to enable UFW
 enable_ufw() {
   # Set UFW defaults
   sudo ufw default deny incoming
   sudo ufw default allow outgoing
 
   # Prompt the user for the SSH port to allow
-  dialog --title "Enable UFW - SSH Port" --inputbox "Enter the SSH port to allow (default is 22):" 10 60 2> ssh_port.txt
-  ssh_port=$(cat ssh_port.txt)
+  ssh_port=$(dialog --title "Enable UFW - SSH Port" --inputbox "Enter the SSH port to allow (default is 22):" 10 60 2>&1)
 
   # Check if the SSH port is empty and set it to default (22) if not provided
   if [ -z "$ssh_port" ]; then
@@ -387,8 +381,7 @@ enable_ufw() {
   sudo ufw allow "$ssh_port/tcp"
 
   # Prompt the user for additional ports to open
-  dialog --title "Enable UFW - Additional Ports" --inputbox "Enter additional ports to open (comma-separated, e.g., 80,443):" 10 60 2> ufw_ports.txt
-  ufw_ports=$(cat ufw_ports.txt)
+  ufw_ports=$(dialog --title "Enable UFW - Additional Ports" --inputbox "Enter additional ports to open (comma-separated, e.g., 80,443):" 10 60 2>&1)
 
   # Allow additional ports specified by the user
   if [ -n "$ufw_ports" ]; then
@@ -399,14 +392,17 @@ enable_ufw() {
   fi
 
   # Enable UFW to start at boot
-  sudo ufw enable
+  sudo ufw --force enable
   sudo systemctl enable ufw
 
   # Display completion message
   dialog --msgbox "UFW enabled and configured successfully.\nSSH port $ssh_port and additional ports allowed." 12 60
+
+  # Clean up temporary files
+  rm -f ssh_port.txt ufw_ports.txt
 }
 
-# 13. Function to install and configure WARP Proxy
+# 11. Function to install and configure WARP Proxy
 install_configure_warp_proxy() {
   dialog --title "Install & Configure WARP Proxy" --yesno "Do you want to install and configure WARP Proxy?" 10 60
   response=$?
@@ -420,35 +416,36 @@ install_configure_warp_proxy() {
   else
     dialog --msgbox "Skipping installation and configuration of WARP Proxy." 10 60
   fi
+  
+  # Clean up temporary files (if any)
+  rm -f warp_proxy_temp_file
 }
 
-# 14 Function to set up MTProto Proxy submenu
+# 12. Function to set up MTProto Proxy submenu
 setup_mtproto_proxy_submenu() {
   local mtproto_choice
-  dialog --title "Setup MTProto Proxy" --menu "Choose an MTProto Proxy option:" 15 60 6 \
+  mtproto_choice=$(dialog --title "Setup MTProto Proxy" --menu "Choose an MTProto Proxy option:" 15 60 6 \
     1 "Setup Erlang MTProto (recommended) | Sergey Prokhorov" \
     2 "Setup/Manage Python MTProto | HirbodBehnam" \
     3 "Setup/Manage Official MTProto | HirbodBehnam" \
-    4 "Setup/Manage Golang MTProto | HirbodBehnam" 2> mtproto_choice.txt
-
-  mtproto_choice=$(cat mtproto_choice.txt)
+    4 "Setup/Manage Golang MTProto | HirbodBehnam" 2>&1 >/dev/tty)
 
   case $mtproto_choice in
     "1")
       # Setup Erlang MTProto
-      curl -L -o mtp_install.sh https://git.io/fj5ru && bash mtp_install.sh
+      bash <(curl -fsSL https://git.io/fj5ru)
       ;;
     "2")
       # Setup/Manage Python MTProto
-      curl -o MTProtoProxyInstall.sh -L https://git.io/fjo34 && bash MTProtoProxyInstall.sh
+      bash <(curl -fsSL https://git.io/fjo34)
       ;;
     "3")
       # Setup/Manage Official MTProto
-      curl -o MTProtoProxyOfficialInstall.sh -L https://git.io/fjo3u && bash MTProtoProxyOfficialInstall.sh
+      bash <(curl -fsSL https://git.io/fjo3u)
       ;;
     "4")
       # Setup/Manage Golang MTProto
-      curl -o MTGInstall.sh -L https://git.io/mtg_installer && bash MTGInstall.sh
+      bash <(curl -fsSL https://git.io/mtg_installer)
       ;;
     *)
       dialog --msgbox "Invalid choice. No MTProto Proxy setup performed." 10 40
@@ -462,7 +459,7 @@ setup_mtproto_proxy_submenu() {
 
 # Function to set up MTProto Proxy
 setup_mtproto_proxy() {
-  dialog --title "Setup MTProto Proxy" --yesno "Do you want to set up an MTProto Proxy? It is recommended to install only one of these options, Installing multiple options may lead to conflicts." 10 60
+  dialog --title "Setup MTProto Proxy" --yesno "Do you want to set up an MTProto Proxy? It is recommended to install only one of these options. Installing multiple options may lead to conflicts." 10 60
   response=$?
   if [ $response -eq 0 ]; then
     setup_mtproto_proxy_submenu
@@ -471,7 +468,7 @@ setup_mtproto_proxy() {
   fi
 }
 
-# 15. Function to setup Hysteria II
+# 13. Function to setup Hysteria II
 setup_hysteria_ii() {
   bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/Hysteria-Installer/main/hysteria.sh)
 
@@ -479,7 +476,7 @@ setup_hysteria_ii() {
   read -p "Please Press Enter to continue"
 }
 
-# 16. Function to setup TUIC v5
+# 14. Function to setup TUIC v5
 setup_tuic_v5() {
   bash <(curl -fsSL https://raw.githubusercontent.com/deathline94/tuic-v5-installer/main/tuic-installer.sh)
 
@@ -487,7 +484,7 @@ setup_tuic_v5() {
   read -p "Please Press Enter to continue"
 }
 
-# 17. Function to setup Juicity
+# 15. Function to setup Juicity
 setup_juicity() {
   dialog --title "Setup Juicity" --yesno "Do you want to setup Juicity?" 10 60
   response=$?
@@ -497,17 +494,15 @@ setup_juicity() {
   else
     dialog --msgbox "Skipping Juicity setup." 10 40
   fi
-
-  # Return to the menu
 }
 
-# 18. Function to set up WireGuard
+# 16. Function to setup WireGuard
 setup_wireguard_angristan() {
   dialog --title "Setup WireGuard | angristan" --yesno "Do you want to set up WireGuard using angristan's script?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
     # Download and execute the WireGuard installation script
-    curl -O https://raw.githubusercontent.com/angristan/wireguard-install/master/wireguard-install.sh
+    curl -fsSL https://raw.githubusercontent.com/angristan/wireguard-install/master/wireguard-install.sh -o wireguard-install.sh
     chmod +x wireguard-install.sh
     ./wireguard-install.sh
 
@@ -518,13 +513,13 @@ setup_wireguard_angristan() {
   fi
 }
 
-# 19. Function to set up OpenVPN
+# 17. Function to setup OpenVPN
 setup_openvpn_angristan() {
   dialog --title "Setup OpenVPN | angristan" --yesno "Do you want to set up OpenVPN using angristan's script?" 10 60
   response=$?
   if [ $response -eq 0 ]; then
     # Download and execute the OpenVPN installation script
-    curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
+    curl -fsSL https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh -o openvpn-install.sh
     chmod +x openvpn-install.sh
     ./openvpn-install.sh
 
@@ -535,7 +530,7 @@ setup_openvpn_angristan() {
   fi
 }
 
-# 20. Function to set up IKEv2/IPsec
+# 18. Function to setup IKEv2/IPsec
 setup_ikev2_ipsec() {
   dialog --title "Setup IKEv2/IPsec" --yesno "Do you want to set up IKEv2/IPsec?" 10 60
   response=$?
@@ -550,30 +545,7 @@ setup_ikev2_ipsec() {
   fi
 }
 
-# 21. Function to setup Reverse Tls Tunnel
-setup_reverse_tls_tunnel() {
-  # Ask the user if they want to install Reverse Tls Tunnel
-  dialog --title "Setup Reverse Tls Tunnel" --yesno "Do you want to install Reverse Tls Tunnel developed by radkesvat?" 10 60
-  response=$?
-  if [ $response -eq 0 ]; then
-    # Download the script and make it executable
-    wget "https://raw.githubusercontent.com/radkesvat/ReverseTlsTunnel/master/install.sh" -O install.sh && chmod +x install.sh && bash install.sh
-
-    # Display instructions in the terminal
-    echo "ReverseTlsTunnel has been downloaded. Please run it in an Iran server with this command:"
-    echo "nohup ./RTT --iran --lport:443 --sni:splus.ir --password:123"
-    echo
-    echo "And run it in an Abroad server with:"
-    echo "nohup ./RTT --kharej --iran-ip:5.4.3.2 --iran-port:443 --toip:127.0.0.1 --toport:2083 --password:123 --sni:splus.ir"
-
-    # Wait for the user to press Enter
-    read -p "Please Press Enter to continue"
-  else
-    dialog --msgbox "Skipping installation of Reverse Tls Tunnel." 10 60
-  fi
-}
-
-# 22. Function to create a non-root SSH user
+# 19. Function to create a non-root SSH user
 create_ssh_user() {
   # Ask the user for the username
   dialog --title "Create SSH User" --inputbox "Enter the username for the new SSH user:" 10 60 2> username.txt
@@ -586,8 +558,7 @@ create_ssh_user() {
   fi
 
   # Ask the user for a secure password
-  dialog --title "Create SSH User" --passwordbox "Enter a strong password for the new SSH user:" 10 60 2> password.txt
-  password=$(cat password.txt)
+  password=$(dialog --title "Create SSH User" --passwordbox "Enter a strong password for the new SSH user:" 10 60 2>&1)
 
   # Check if the password is empty
   if [ -z "$password" ]; then
@@ -601,11 +572,11 @@ create_ssh_user() {
   # Set the user's password securely
   echo "$username:$password" | sudo chpasswd
 
-  # Display the created username and password to the user
-  dialog --title "SSH User Created" --msgbox "SSH user '$username' has been created successfully.\n\nUsername: $username\nPassword: $password" 12 60
+  # Display the created username to the user
+  dialog --title "SSH User Created" --msgbox "SSH user '$username' has been created successfully.\n\nUsername: $username" 12 60
 }
 
-# 23. Function to reboot the system
+# 20. Function to reboot the system
 reboot_system() {
   dialog --title "Reboot System" --yesno "Do you want to reboot the system?" 10 60
   response=$?
@@ -618,66 +589,76 @@ reboot_system() {
   fi
 }
 
-# 24. Function to exit the script
+# 21. Function to exit the script
 exit_script() {
   clear  # Clear the terminal screen for a clean exit
   echo "Exiting the script. Goodbye!"
   exit 0  # Exit with a status code of 0 (indicating successful termination)
 }
 
-# Main menu options using dialog
-while true; do
-  choice=$(dialog --clear --backtitle "FreeIRAN v.1.3.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
-    1 "System Update and Cleanup" \
-    2 "Install Essential Packages" \
-    3 "Install Speedtest" \
-    4 "Create Swap File" \
-    5 "Enable BBR" \
-    6 "Enable Hybla" \
-    7 "Schedule Automatic Updates & ReStarts" \
-    8 "Install Multiprotocol VPN Panels" \
-    9 "Obtain SSL Certificates" \
-    10 "Setup Pi-Hole" \
-    11 "Change SSH Port" \
-    12 "Enable UFW" \
-    13 "Install & Configure WARP Proxy" \
-    14 "Setup MTProto Proxy" \
-    15 "Setup/Manage Hysteria II" \
-    16 "Setup/Manage TUIC v5" \
-    17 "Setup/Manage Juicity" \
-    18 "Setup/Manage WireGuard" \
-    19 "Setup/Manage OpenVPN" \
-    20 "Setup IKEv2/IPsec" \
-    21 "Setup Reverse TLS Tunnel" \
-    22 "Create SSH User" \
-    23 "Reboot System" \
-    24 "Exit Script" 3>&1 1>&2 2>&3)
+# Function to display the menu
+display_menu() {
+    local choice
+    while true; do
+        choice=$(dialog --clear \
+                        --backtitle "FreeIRAN Setup Script v1.4.0" \
+                        --title "Menu" \
+                        --menu "Choose an option:" 20 60 15 \
+                        "1" "Optimize System" \
+                        "2" "Install Speedtest" \
+                        "3" "Create SWAP" \
+                        "4" "Enable BBR" \
+                        "5" "Enable Hybla" \
+                        "6" "Install VPN Panel" \
+                        "7" "Get SSL Certificates" \
+                        "8" "Set up Pi-Hole" \
+                        "9" "Change SSH port" \
+                        "10" "Enable FireWall" \
+                        "11" "Install WARP" \
+                        "12" "Manage MTProto Proxy" \
+                        "13" "Manage Hysteria II" \
+                        "14" "Manage TUIC v5" \
+                        "15" "Manage Juicity" \
+                        "16" "Manage WireGuard" \
+                        "17" "Manage OpenVPN" \
+                        "18" "Setup IKEv2/IPsec" \
+                        "19" "Create SSH user" \
+                        "20" "Reboot the system" \
+                        "21" "Exit script" 3>&1 1>&2 2>&3)
+        case $choice in
+            1) system_update ;;
+            2) install_speedtest ;;
+            3) create_swap_file ;;
+            4) enable_bbr ;;
+            5) enable_hybla ;;
+            6) install_vpn_panel ;;
+            7) obtain_ssl_certificates ;;
+            8) setup_pi_hole ;;
+            9) change_ssh_port ;;
+            10) enable_ufw ;;
+            11) install_configure_warp_proxy ;;
+            12) setup_mtproto_proxy ;;
+            13) setup_hysteria_ii ;;
+            14) setup_tuic_v5 ;;
+            15) setup_juicity ;;
+            16) setup_wireguard_angristan ;;
+            17) setup_openvpn_angristan ;;
+            18) setup_ikev2_ipsec ;;
+            19) create_ssh_user ;;
+            20) reboot_system ;;
+            21) exit_script ;;
+            *) echo "Invalid option";;
+        esac
+    done
+}
 
-  case $choice in
-    1) system_update ;;
-    2) install_essential_packages ;;
-    3) install_speedtest ;;
-    4) create_swap_file ;;
-    5) enable_bbr ;;
-    6) enable_hybla ;;
-    7) enable_and_configure_cron ;;
-    8) install_vpn_panel ;;
-    9) obtain_ssl_certificates ;;
-    10) setup_pi_hole ;;
-    11) change_ssh_port ;;
-    12) enable_ufw ;;
-    13) install_configure_warp_proxy ;;
-    14) setup_mtproto_proxy ;;
-    15) setup_hysteria_ii ;;
-    16) setup_tuic_v5 ;;
-    17) setup_juicity ;;
-    18) setup_wireguard_angristan ;;
-    19) setup_openvpn_angristan ;;
-    20) setup_ikev2_ipsec ;;
-    21) setup_reverse_tls_tunnel ;;
-    22) create_ssh_user ;;
-    23) reboot_system ;;
-    24) exit_script ;;
-    *) echo "Invalid option. Please try again." ;;
-  esac
-done
+# Execute the main function
+main() {
+    check_sudo
+    display_intro
+    validate_input
+    display_menu
+}
+
+# Execute the script
+main

@@ -24,8 +24,7 @@ What does this script do? you can select to:
 18. Setup WireGuard ♟️
 19. Setup OpenVPN 🎗️
 20. Setup IKEv2/IPsec 🧭
-21. Setup Reverse TLS Tunnel 🔄
-22. Create non-root SSH User 👤
+21. Create non-root SSH User 👤
 
 ⚠️ Manually set the parameters yourself when prompted during the setup.
 
@@ -164,27 +163,36 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 ```
-## Optional: Install AriaFileServer 🪄
+## Optional: Install miniserve 🪄
+```
+wget https://github.com/svenstaro/miniserve/releases/download/v0.26.0/miniserve-0.26.0-x86_64-unknown-linux-gnu
+ls -l /root/miniserve
+chmod +x /root/miniserve
+sudo mv /etc/letsencrypt/live/abc.domain.xyz/fullchain.pem /etc/letsencrypt/live/abc.domain.xyz/certificate.cert
+sudo mv /etc/letsencrypt/live/abc.domain.xyz/privkey.pem /etc/letsencrypt/live/abc.domain.xyz/private.key
+```
+### miniserve.service configuration
+```
+sudo nano /etc/systemd/system/miniserve.service
+-------------------
+[Unit]
+Description=Miniserve File Server
+After=network.target
 
-See HTTPS version at https://github.com/ErfanNamira/AriaFileServer
-### ⭐ HTTP Version
-✨ http://IP:Port
-```
-cd /home/qbittorrent-nox/Downloads
-wget https://raw.githubusercontent.com/ErfanNamira/AriaFileServer/main/AriaFileServerHTTP.py
-sudo apt install python3-pip
-pip3 install flask passlib
-python3 AriaFileServerHTTP.py
-```
-## Optional: Install simplefileserver 🪩
+[Service]
+ExecStart=/root/miniserve -p 2087 --tls-cert /etc/letsencrypt/live/abc.domain.xyz/certificate.cert --tls-key /etc/letsencrypt/live/abc.domain.xyz/private.key --auth USER:PASS /Downloads
+WorkingDirectory=/root
+Restart=always
+User=root
 
-⚠️ simplefileserver DO NOT Support Authentication
-```
-cd /home/qbittorrent-nox/Downloads
-wget https://github.com/sssvip/simple-file-server/releases/download/v0.1.4/simple-file-server_0.1.4_linux_amd64.tar.gz
-tar -xzvf simple-file-server_0.1.4_linux_amd64.tar.gz
-chmod 777 simplefileserver
-sudo /home/qbittorrent-nox/Downloads/simplefileserver 80
+[Install]
+WantedBy=multi-user.target
+-------------------
+mkdir /Downloads
+sudo systemctl daemon-reload
+sudo systemctl enable miniserve.service
+sudo systemctl start miniserve.service
+sudo systemctl status miniserve.service
 ```
 ## Optional: WARP XrayConfig ✨
 ```
@@ -217,18 +225,16 @@ https://github.com/deathline94/Juicity-Installer
 https://github.com/deathline94/tuic-v5-installer
 https://github.com/deathline94/Hysteria-Installer
 https://github.com/HirbodBehnam/MTProtoProxyInstaller
-https://github.com/sssvip/simple-file-server
 https://github.com/angristan/wireguard-install
 https://github.com/angristan/openvpn-install
 https://github.com/blocklistproject/Lists
 https://github.com/hwdsl2/setup-ipsec-vpn
 https://github.com/rahgozar94725/freedom
 https://github.com/seriyps/mtproto_proxy
+https://github.com/svenstaro/miniserve
 https://github.com/P3TERX/warp.sh
 ```
 ## Buy Me a Coffee ☕❤️
 ```
-Tron USDT (TRC20): TMrJHiTnE6wMqHarp2SxVEmJfKXBoTSnZ4
 LiteCoin (LTC): ltc1qwhd8jpwumg5uywgv028h3lnsck8mjxhxnp4rja
-BTC: bc1q2tjjyg60hhsuyauha6uptgrwm32sarhmjlwvae
 ```

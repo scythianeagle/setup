@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# FreeIRAN v1.3.0
+# FreeIRAN v1.4.0
 # -----------------------------------------------------------------------------
 # Description: This script automates the setup and configuration of various
-#              utilities and services on a Linux server for a secure and
+#              utilities and services on an Ubuntu server for a secure and
 #              optimized environment, with a focus on enhancing internet
 #              freedom and privacy in Iran.
 #
@@ -183,21 +183,21 @@ enable_hybla() {
 # 7. Function to enable and configure Cron
 enable_and_configure_cron() {
   # Prompt for automatic updates
-  dialog --title "Enable Automatic Updates" --yesno "Would you like to enable automatic updates? This will schedule system updates every night at 00:30 +3:30 GMT." 10 60
+  dialog --title "Enable Automatic Updates" --yesno "Would you like to enable automatic updates? This will schedule system updates every night at 02:00 +3:30 GMT." 10 60
   update_response=$?
 
   # Prompt for scheduling system restarts
-  dialog --title "Schedule System Restarts" --yesno "Would you like to schedule system restarts? This will schedule system restarts every night at 01:30 +3:30 GMT." 10 60
+  dialog --title "Schedule System Restarts" --yesno "Would you like to schedule system restarts? This will schedule system restarts every night at 02:30 +3:30 GMT." 10 60
   restart_response=$?
 
   if [ $update_response -eq 0 ]; then
     # Configure automatic updates using Cron
-    echo "00 22 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
+    echo "30 00 * * * /usr/bin/apt-get update && /usr/bin/apt-get upgrade -y && /usr/bin/apt-get autoremove -y && /usr/bin/apt-get autoclean -y && /usr/bin/apt-get clean -y" | sudo tee -a /etc/crontab
     updates_message="Automatic updates have been enabled and scheduled."
 
     if [ $restart_response -eq 0 ]; then
       # Schedule system restarts using Cron
-      echo "30 22 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
+      echo "00 01 * * * /sbin/shutdown -r" | sudo tee -a /etc/crontab
       restarts_message="System restarts have been scheduled."
     else
       restarts_message="System restart scheduling skipped."
@@ -218,15 +218,18 @@ enable_and_configure_cron() {
 
 # 8. Function to Install Multiprotocol VPN Panel
 install_vpn_panel() {
-  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 15 60 8 \
+  dialog --title "Install Multiprotocol VPN Panel" --menu "Select a VPN Panel to Install:" 20 60 12 \
     "1" "X-UI | Alireza" \
-    "2" "X-UI | MHSanaei" \
-    "3" "X-UI | vaxilu" \
-    "4" "X-UI | FranzKafkaYu" \
-    "5" "X-UI En | FranzKafkaYu" \
-    "6" "reality-ezpz | aleskxyz" \
-    "7" "Hiddify" \
-    "8" "Marzban | Gozargah" 2> vpn_choice.txt
+    "2" "S-UI | Alireza" \
+	"3" "H-UI | Hysteria2 Panel" \
+	"4" "X-UI | MHSanaei" \
+    "5" "X-UI | Vaxilu" \
+    "6" "X-UI | FranzKafkaYu" \
+    "7" "X-UI En | FranzKafkaYu" \
+    "8" "Reality-EZPZ | Aleskxyz" \
+    "9" "Hiddify" \
+    "10" "Marzban | Gozargah" \
+	"11" "UnInstall H-UI" 2> vpn_choice.txt
      
   vpn_choice=$(cat vpn_choice.txt)
 
@@ -235,26 +238,44 @@ install_vpn_panel() {
       bash <(curl -Ls https://raw.githubusercontent.com/alireza0/x-ui/master/install.sh)
       ;;
     "2")
-      bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+      bash <(curl -Ls https://raw.githubusercontent.com/alireza0/s-ui/master/install.sh)
+	  dialog --msgbox "Default Installation Information\n\nPanel Port: 2095\nPanel Path: /app/\nSubscription Port: 2096\nSubscription Path: /sub/\nUser/Password: admin" 12 50
       ;;
     "3")
-      bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+      mkdir -p /usr/local/h-ui/
+      curl -fsSL https://github.com/jonssonyan/h-ui/releases/latest/download/h-ui-linux-amd64 -o /usr/local/h-ui/h-ui && chmod +x /usr/local/h-ui/h-ui
+      curl -fsSL https://raw.githubusercontent.com/jonssonyan/h-ui/main/h-ui.service -o /etc/systemd/system/h-ui.service
+      systemctl daemon-reload
+      systemctl enable h-ui
+      systemctl restart h-ui
+      dialog --msgbox "Default Installation Information\n\nPanel Port: 8081\nUsername/Password: sysadmin" 10 40
       ;;
     "4")
-      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
-      ;;
+      bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+      ;;	  
     "5")
-      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install_en.sh)
+      bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
       ;;
     "6")
-      bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
+      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
       ;;
     "7")
-      bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+      bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install_en.sh)
       ;;
     "8")
+      bash <(curl -sL https://raw.githubusercontent.com/aleskxyz/reality-ezpz/master/reality-ezpz.sh)
+      ;;
+    "9")
+      bash -c "$(curl -Lfo- https://raw.githubusercontent.com/hiddify/hiddify-config/main/common/download_install.sh)"
+      ;;
+    "10")
       sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install
       marzban cli admin create --sudo
+	    ;;
+    "11")
+      systemctl stop h-ui
+	  rm -rf /etc/systemd/system/h-ui.service /usr/local/h-ui/
+	  dialog --msgbox "H-UI uninstalled successfully." 10 40
       ;;
     *)
       dialog --msgbox "Invalid choice. No VPN Panel installed." 10 40
@@ -550,29 +571,6 @@ setup_ikev2_ipsec() {
   fi
 }
 
-# 21. Function to setup Reverse Tls Tunnel
-setup_reverse_tls_tunnel() {
-  # Ask the user if they want to install Reverse Tls Tunnel
-  dialog --title "Setup Reverse Tls Tunnel" --yesno "Do you want to install Reverse Tls Tunnel developed by radkesvat?" 10 60
-  response=$?
-  if [ $response -eq 0 ]; then
-    # Download the script and make it executable
-    wget "https://raw.githubusercontent.com/radkesvat/ReverseTlsTunnel/master/install.sh" -O install.sh && chmod +x install.sh && bash install.sh
-
-    # Display instructions in the terminal
-    echo "ReverseTlsTunnel has been downloaded. Please run it in an Iran server with this command:"
-    echo "nohup ./RTT --iran --lport:443 --sni:splus.ir --password:123"
-    echo
-    echo "And run it in an Abroad server with:"
-    echo "nohup ./RTT --kharej --iran-ip:5.4.3.2 --iran-port:443 --toip:127.0.0.1 --toport:2083 --password:123 --sni:splus.ir"
-
-    # Wait for the user to press Enter
-    read -p "Please Press Enter to continue"
-  else
-    dialog --msgbox "Skipping installation of Reverse Tls Tunnel." 10 60
-  fi
-}
-
 # 22. Function to create a non-root SSH user
 create_ssh_user() {
   # Ask the user for the username
@@ -627,11 +625,11 @@ exit_script() {
 
 # Main menu options using dialog
 while true; do
-  choice=$(dialog --clear --backtitle "FreeIRAN v.1.3.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 18 60 15 \
+  choice=$(dialog --clear --backtitle "FreeIRAN v.1.4.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 30 60 25 \
     1 "System Update and Cleanup" \
     2 "Install Essential Packages" \
     3 "Install Speedtest" \
-    4 "Create Swap File" \
+    4 "Create SWAP File" \
     5 "Enable BBR" \
     6 "Enable Hybla" \
     7 "Schedule Automatic Updates & ReStarts" \
@@ -648,10 +646,9 @@ while true; do
     18 "Setup/Manage WireGuard" \
     19 "Setup/Manage OpenVPN" \
     20 "Setup IKEv2/IPsec" \
-    21 "Setup Reverse TLS Tunnel" \
-    22 "Create SSH User" \
-    23 "Reboot System" \
-    24 "Exit Script" 3>&1 1>&2 2>&3)
+    21 "Create SSH User" \
+    22 "Reboot System" \
+    23 "Exit Script" 3>&1 1>&2 2>&3)
 
   case $choice in
     1) system_update ;;
@@ -674,10 +671,9 @@ while true; do
     18) setup_wireguard_angristan ;;
     19) setup_openvpn_angristan ;;
     20) setup_ikev2_ipsec ;;
-    21) setup_reverse_tls_tunnel ;;
-    22) create_ssh_user ;;
-    23) reboot_system ;;
-    24) exit_script ;;
+    21) create_ssh_user ;;
+    22) reboot_system ;;
+    23) exit_script ;;
     *) echo "Invalid option. Please try again." ;;
   esac
 done

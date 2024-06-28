@@ -34,6 +34,10 @@ It's highly recommended to run this script only on a fresh install of Ubuntu 22.
 ```
 curl -O https://raw.githubusercontent.com/ErfanNamira/FreeIRAN/main/FreeIRAN.sh && chmod +x FreeIRAN.sh && sed -i -e 's/\r$//' FreeIRAN.sh && sudo apt update && sudo apt install -y dialog && ./FreeIRAN.sh
 ```
+To run the script after the first time, just enter the following command in the terminal:
+```
+./FreeIRAN.sh
+```
 ## Access Panels 🚪
 1. If you have installed Reality-EZPZ, you can access its TUI by running the following command:
 ```

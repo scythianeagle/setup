@@ -71,7 +71,7 @@ If you want to uninstall H-UI:
 systemctl stop h-ui
 rm -rf /etc/systemd/system/h-ui.service /usr/local/h-ui/
 ```
-3. If you have installed Pi-hole, you can access its command-line interface by using the following command:
+5. If you have installed Pi-hole, you can access its command-line interface by using the following command:
 ```
 pihole
 ```

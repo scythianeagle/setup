@@ -153,6 +153,48 @@ sudo ufw enable
 sudo ufw status verbose
 sudo systemctl enable ufw
 ```
+### Enable Pi-hole DOH
+```
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo apt-get install ./cloudflared-linux-amd64.deb
+cloudflared -v
+sudo useradd -s /usr/sbin/nologin -r -M cloudflared
+sudo nano /etc/default/cloudflared
+```
+Commandline args for cloudflared, using Cloudflare DNS
+```
+CLOUDFLARED_OPTS=--port 5053 --upstream https://1.1.1.1/dns-query --upstream https://1.0.0.1/dns-query
+```
+```
+sudo chown cloudflared:cloudflared /etc/default/cloudflared
+sudo chown cloudflared:cloudflared /usr/local/bin/cloudflared
+sudo nano /etc/systemd/system/cloudflared.service
+```
+cloudflared.service
+```
+[Unit]
+Description=cloudflared DNS over HTTPS proxy
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+User=cloudflared
+EnvironmentFile=/etc/default/cloudflared
+ExecStart=/usr/local/bin/cloudflared proxy-dns $CLOUDFLARED_OPTS
+Restart=on-failure
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+```
+```
+sudo systemctl enable cloudflared
+sudo systemctl start cloudflared
+sudo systemctl status cloudflared
+dig @127.0.0.1 -p 5053 google.com
+```
+Now, go to pihole web interface (/admin/settings.php?tab=dns) and set your upstream server only to: 127.0.0.1#5053
 ### Useful Commands
 For tasks like testing network speed and other related measurements.
 ```

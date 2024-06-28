@@ -11,9 +11,9 @@ What does this script do? you can select to:
 5. Enable BBR 🛸
 6. Enable Hybla 🌐
 7. Schedule Automatic Updates & Restarts at 01:00 GMT+3:30 ⏳
-8. Install Multiprotocol VPN Panels (Alireza/MHSanaei/Reality-EZPZ/Marzban/Hiddify/vaxilu/FranzKafkaYu) 🦄
+8. Install Multiprotocol VPN Panels (X-UI/S-UI/H-UI/Reality-EZPZ/Marzban/Hiddify/Vaxilu/FranzKafkaYu) 🦄
 9. Obtain SSL Certificates 🗺️
-10. Install Pi-Hole network-wide Adblocker 🛡️
+10. Install Pi-Hole Network-Wide Adblocker 🛡️
 11. Change SSH Port 🥅
 12. Enable UFW 🔒
 13. Install & Configure WARP Proxy ✨
@@ -42,6 +42,34 @@ bash <(curl -sL https://bit.ly/realityez) -m
 2. If you have installed X-UI Panels, you can access their command-line interface by using the following command:
 ```
 x-ui
+```
+3. If you have installed S-UI, you can access it's web interface by
+```
+http://ip:port/webbasepath
+    Panel Port: 2095
+    Panel Path: /app/
+    Subscription Port: 2096
+    Subscription Path: /sub/
+    User/Passowrd: admin
+```
+If you want to uninstall S-UI:
+```
+systemctl disable sing-box --now
+systemctl disable s-ui  --now
+rm -f /etc/systemd/system/s-ui.service
+rm -f /etc/systemd/system/sing-box.service
+systemctl daemon-reload
+rm -fr /usr/local/s-ui
+```
+4. If you have installed H-UI, you can access it's web interface by
+```
+http://ip:8081
+Username/Password: sysadmin
+```
+If you want to uninstall S-UI:
+```
+systemctl stop h-ui
+rm -rf /etc/systemd/system/h-ui.service /usr/local/h-ui/
 ```
 3. If you have installed Pi-hole, you can access its command-line interface by using the following command:
 ```
@@ -165,7 +193,7 @@ WantedBy=multi-user.target
 ```
 ## Optional: Install miniserve 🪄
 ```
-wget https://github.com/svenstaro/miniserve/releases/download/v0.26.0/miniserve-0.26.0-x86_64-unknown-linux-gnu
+wget https://github.com/svenstaro/miniserve/releases/download/v0.27.1/miniserve-0.27.1-x86_64-unknown-linux-gnu
 ls -l /root/miniserve
 chmod +x /root/miniserve
 sudo mv /etc/letsencrypt/live/abc.domain.xyz/fullchain.pem /etc/letsencrypt/live/abc.domain.xyz/certificate.cert
@@ -215,7 +243,9 @@ sudo systemctl status miniserve.service
 https://github.com/pi-hole
 https://github.com/vaxilu/x-ui
 https://github.com/alireza0/x-ui
+https://github.com/alireza0/s-ui
 https://github.com/MHSanaei/3x-ui
+https://github.com/jonssonyan/h-ui
 https://github.com/Gozargah/Marzban
 https://github.com/FranzKafkaYu/x-ui
 https://github.com/aleskxyz/reality-ezpz

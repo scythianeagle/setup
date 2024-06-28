@@ -66,7 +66,7 @@ rm -fr /usr/local/s-ui
 http://ip:8081
 Username/Password: sysadmin
 ```
-If you want to uninstall S-UI:
+If you want to uninstall H-UI:
 ```
 systemctl stop h-ui
 rm -rf /etc/systemd/system/h-ui.service /usr/local/h-ui/

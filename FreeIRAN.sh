@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+
 # FreeIRAN v1.4.0
 # -----------------------------------------------------------------------------
 # Description: This script automates the setup and configuration of various
@@ -18,7 +18,7 @@
 #       running it on your system. Some configurations may require manual
 #       adjustments based on your specific needs and server setup.
 # -----------------------------------------------------------------------------
-#
+
 # Check for sudo privileges
 if [[ $EUID -ne 0 ]]; then
   if [[ $(sudo -n true 2>/dev/null) ]]; then

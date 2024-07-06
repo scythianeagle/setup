@@ -53,7 +53,7 @@ install_essential_packages() {
   response=$?
 
   if [ $response -eq 0 ]; then
-    packages=("curl" "nano" "certbot" "cron" "ufw" "htop" "net-tools" "zip" "unzip" "xclip")
+    packages=("curl" "nano" "certbot" "cron" "wget" "htop" "net-tools" "zip" "unzip" "xclip" "apt-transport-https" "stunnel4" "openssh-server" "bash-completion" "ca-certificates" "apt-utils")
 
     package_installed() {
       dpkg -l | grep -q "^ii  $1"
@@ -168,6 +168,21 @@ enable_hybla() {
       "net.ipv4.tcp_wmem = 4096 65536 67108864"
       "net.ipv4.tcp_mtu_probing = 1"
       "net.ipv4.tcp_congestion_control = hybla"
+      "net.ipv4.ip_forward = 1"
+      "net.ipv4.conf.all.rp_filter = 1"
+      "net.ipv4.conf.default.rp_filter = 1"
+      "net.ipv4.conf.all.accept_redirects = 0"
+      "net.ipv4.conf.default.accept_redirects = 0"
+      "net.ipv4.conf.all.secure_redirects = 0"
+      "net.ipv4.conf.default.secure_redirects = 0"
+      "net.ipv6.conf.all.accept_redirects = 0"
+      "net.ipv6.conf.default.accept_redirects = 0"
+      "net.ipv4.conf.default.send_redirects = 0"
+      "net.ipv4.icmp_echo_ignore_all = 1"
+      "net.ipv4.conf.all.accept_source_route = 0"
+      "net.ipv4.conf.default.accept_source_route = 0"
+      "net.ipv6.conf.all.accept_source_route = 0"
+      "net.ipv6.conf.default.accept_source_route = 0"
     )
 
     for setting in "${sysctl_settings[@]}"; do
@@ -401,30 +416,30 @@ enable_ufw() {
 
   # Check if the SSH port is empty and set it to default (22) if not provided
   if [ -z "$ssh_port" ]; then
-    ssh_port=22
+    ssh_port=1899
   fi
 
   # Allow SSH port
-  sudo ufw allow "$ssh_port/tcp"
+  #sudo ufw allow "$ssh_port/tcp"
 
   # Prompt the user for additional ports to open
-  dialog --title "Enable UFW - Additional Ports" --inputbox "Enter additional ports to open (comma-separated, e.g., 80,443):" 10 60 2> ufw_ports.txt
-  ufw_ports=$(cat ufw_ports.txt)
+  #dialog --title "Enable UFW - Additional Ports" --inputbox "Enter additional ports to open (comma-separated, e.g., 80,443):" 10 60 2> ufw_ports.txt
+  #ufw_ports=$(cat ufw_ports.txt)
 
   # Allow additional ports specified by the user
-  if [ -n "$ufw_ports" ]; then
-    IFS=',' read -ra ports_array <<< "$ufw_ports"
-    for port in "${ports_array[@]}"; do
-      sudo ufw allow "$port/tcp"
-    done
-  fi
+  #if [ -n "$ufw_ports" ]; then
+   # IFS=',' read -ra ports_array <<< "$ufw_ports"
+    #for port in "${ports_array[@]}"; do
+     # sudo ufw allow "$port/tcp"
+    #done
+  #fi
 
   # Enable UFW to start at boot
-  sudo ufw enable
-  sudo systemctl enable ufw
+ # sudo ufw enable
+  #sudo systemctl enable ufw
 
   # Display completion message
-  dialog --msgbox "UFW enabled and configured successfully.\nSSH port $ssh_port and additional ports allowed." 12 60
+ # dialog --msgbox "UFW enabled and configured successfully.\nSSH port $ssh_port and additional ports allowed." 12 60
 }
 
 # 13. Function to install and configure WARP Proxy

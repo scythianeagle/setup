@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#
 # FreeIRAN v1.4.0
 # -----------------------------------------------------------------------------
 # Description: This script automates the setup and configuration of various
@@ -18,7 +18,7 @@
 #       running it on your system. Some configurations may require manual
 #       adjustments based on your specific needs and server setup.
 # -----------------------------------------------------------------------------
-
+#
 # Check for sudo privileges
 if [[ $EUID -ne 0 ]]; then
   if [[ $(sudo -n true 2>/dev/null) ]]; then
@@ -53,7 +53,7 @@ install_essential_packages() {
   response=$?
 
   if [ $response -eq 0 ]; then
-    packages=("curl" "nano" "certbot" "cron" "wget" "htop" "net-tools" "zip" "unzip" "xclip" "apt-transport-https" "stunnel4" "openssh-server" "bash-completion" "ca-certificates" "apt-utils")
+    packages=("curl" "nano" "certbot" "cron" "wget" "htop" "net-tools" "zip" "unzip" "xclip" "apt-transport-https" "stunnel4" "openssh-server" "bash-completion" "ca-certificates" "apt-utils" )
 
     package_installed() {
       dpkg -l | grep -q "^ii  $1"
